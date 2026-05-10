@@ -1,0 +1,47 @@
+# =====================================================================
+# AI Proctoring — Optimized
+# =====================================================================
+# Tested with Python 3.10 / 3.11. CPU-only is supported and is the
+# default target (i3 12th-gen, 8 GB RAM).
+# =====================================================================
+
+# --- Core CV ----------------------------------------------------------
+opencv-python>=4.5.0
+mediapipe==0.10.14
+ultralytics>=8.0.0
+
+# --- ML framework -----------------------------------------------------
+torch>=1.7.0
+torchvision>=0.8.0
+torchaudio>=2.1.0
+numpy>=1.20.0
+
+# --- Audio ------------------------------------------------------------
+sounddevice>=0.4.0
+
+# --- Screen capture ---------------------------------------------------
+mss>=6.1.0
+
+# --- Alert system -----------------------------------------------------
+gTTS>=2.3.1
+pygame-ce>=2.1.2
+
+# --- Reporting --------------------------------------------------------
+jinja2>=3.0.0
+matplotlib>=3.5.0
+Pillow>=9.0.0
+pdfkit>=1.0.0          # only used if wkhtmltopdf is installed
+
+# --- System monitoring (NEW — adaptive performance) -------------------
+psutil>=5.9.0
+
+# --- Config ------------------------------------------------------------
+pyyaml>=5.0.0
+
+# --- Optional speech transcription (off by default in config) ---------
+# openai-whisper>=20231106
+
+# --- Removed (no longer needed) ---------------------------------------
+# facenet-pytorch       — replaced by single MediaPipe pipeline
+# webrtcvad-wheels      — replaced by lightweight energy+ZCR detector
+# flask                 — old dashboard removed

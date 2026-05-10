@@ -1,0 +1,26 @@
+# Core API
+fastapi>=0.115.0
+uvicorn[standard]>=0.32.0
+python-dotenv>=1.0.1
+pydantic>=2.10.0
+
+# Computer Vision
+opencv-python-headless>=4.10.0
+numpy>=2.4.0                # Required for Python 3.14 support
+
+# MediaPipe & YOLO (Optional on 3.14 - System will use OpenCV fallbacks)
+# mediapipe>=0.10.14
+# ultralytics>=8.3.0
+
+# Performance monitoring
+psutil>=6.1.0
+
+# HTTP client (Supabase sync)
+requests>=2.32.0
+
+# Config
+pyyaml>=6.0.2
+
+# PDF report generation
+reportlab>=4.2.0
+

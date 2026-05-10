@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  # Next.js MERN Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=${DATABASE_URL}
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+      - AI_SERVICE_URL=http://ai-service:8000
+    depends_on:
+      - ai-service
+
+  # Python AI Proctoring Service
+  ai-service:
+    build:
+      context: ./ai-proctoring
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./ai-proctoring:/app
+    environment:
+      - GEMINI_API_KEY=${GEMINI_API_KEY}

@@ -1,0 +1,128 @@
+# =====================================================================
+# AI Proctoring System — Optimized Configuration
+# Tuned for low-end machines (i3 12th-gen, 8 GB RAM, integrated graphics)
+# =====================================================================
+
+video:
+  source: 0                       # 0 = default webcam
+  resolution: [640, 480]          # 480p — biggest single CPU win
+  fps: 20                         # Capture FPS (downstream FPS is lower)
+  recording_path: "./recordings"
+  jpeg_quality: 80                # Quality for evidence screenshots
+
+screen:
+  monitor_index: 0
+  fps: 5                          # Reduced from 15 → 5 to cut disk I/O
+  recording: true
+
+# ---------------------------------------------------------------------
+# Detection FPS budgets (per the review's recommendations)
+# ---------------------------------------------------------------------
+detection:
+  face_pipeline:
+    fps: 10                       # Single shared face pipeline
+    min_confidence: 0.55
+    num_faces: 3                  # Detect up to 3 faces (multi-face check)
+    landmarker_model: "face_landmarker.task"
+
+  gaze:
+    fps: 8
+    yaw_threshold_deg: 22         # Head turned > 22° = looking away
+    pitch_threshold_deg: 18       # Head down/up > 18° = looking away
+    use_head_pose: true           # solvePnP head pose vs. simple eye-x
+
+  mouth:
+    fps: 5
+    open_threshold: 0.035         # Normalized lip-distance threshold
+    require_audio: true           # Only flag mouth-moving when audio present
+
+  multi_face:
+    immediate: true               # Multiple faces = no debounce
+
+  objects:
+    fps: 2                        # YOLO @ 2 FPS — review's recommendation
+    min_confidence: 0.55
+    imgsz: 320                    # Small input for nano model
+    model_path: "models/yolov8n.pt"
+    target_classes:
+      67: "cell phone"
+      63: "laptop"
+      73: "book"
+      62: "tv"
+
+  audio:
+    enabled: true
+    sample_rate: 16000
+    chunk_size: 512
+    energy_threshold: 0.0015
+    zcr_threshold: 0.35
+    voice_persistence_sec: 0.4    # Voice must persist 0.4s — debounces clicks
+    whisper_enabled: false
+    whisper_model: "tiny.en"
+
+  liveness:
+    enabled: true
+    min_blinks_per_minute: 6      # Healthy adult ≈ 12-20 bpm; <6 → suspicious
+    ear_threshold: 0.21           # EAR below = eye closed
+    consec_frames: 2
+
+# ---------------------------------------------------------------------
+# Temporal validation — converts raw detections to confirmed violations.
+# This is the heart of "no more false positives".
+# ---------------------------------------------------------------------
+suspicion:
+  face_missing_sec: 3.0           # Face gone > 3s → FACE_DISAPPEARED
+  gaze_away_sec: 2.0              # Looking away > 2s → GAZE_AWAY
+  talking_sec: 4.0                # Mouth+audio > 4s → TALKING
+  multi_face_immediate: true
+  object_immediate: true
+
+# ---------------------------------------------------------------------
+# Adaptive performance — psutil monitors CPU/RAM, downshifts on overload
+# ---------------------------------------------------------------------
+performance:
+  monitor_enabled: true
+  cpu_high_threshold: 85          # %
+  ram_high_threshold: 85          # %
+  cooldown_sec: 5                 # How often to re-evaluate
+  modes:
+    high:
+      face_fps: 10
+      gaze_fps: 8
+      mouth_fps: 5
+      object_fps: 2
+    low:
+      face_fps: 6
+      gaze_fps: 4
+      mouth_fps: 3
+      object_fps: 1
+
+# ---------------------------------------------------------------------
+# Logging & alerts
+# ---------------------------------------------------------------------
+logging:
+  log_path: "./logs"
+  alert_cooldown: 10              # seconds between same voice alert
+  alert_system:
+    voice_alerts: true
+    alert_volume: 0.8
+
+  screenshot_cooldown: 10         # 1 evidence shot per type per 10s
+  event_queue_maxsize: 100        # Bounded queue — RAM safety
+  violation_save_interval: 30     # Incremental save every 30s
+
+global:
+  output_path: "./reports"
+
+reporting:
+  image_dir: "./reports/generated/images"
+  output_dir: "./reports/generated"
+  wkhtmltopdf_path: ""            # Empty → HTML fallback (cross-platform)
+  severity_levels:
+    FACE_DISAPPEARED: 3
+    GAZE_AWAY: 2
+    TALKING_DETECTED: 4
+    MULTIPLE_FACES: 5
+    OBJECT_DETECTED: 5
+    LIVENESS_FAILED: 4
+    AUDIO_DETECTED: 2

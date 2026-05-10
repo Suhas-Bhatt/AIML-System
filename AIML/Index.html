@@ -1,0 +1,2181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Agent OS for EdTech — Sales · Delivery · HR · Finance</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Nunito:wght@400;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#07080F; --bg2:#0C0D1C; --bg3:#111225;
+  --border:#1C1D38; --border2:#252648;
+
+  /* department colors */
+  --sales:#FF6B6B;    --sales-l:rgba(255,107,107,.1);   --sales-b:rgba(255,107,107,.28);
+  --delivery:#00C9A7; --delivery-l:rgba(0,201,167,.1);  --delivery-b:rgba(0,201,167,.28);
+  --hr:#9C6AFF;       --hr-l:rgba(156,106,255,.1);      --hr-b:rgba(156,106,255,.28);
+  --finance:#F9A825;  --finance-l:rgba(249,168,37,.1);  --finance-b:rgba(249,168,37,.28);
+  --mktg:#29B6F6;     --mktg-l:rgba(41,182,246,.1);     --mktg-b:rgba(41,182,246,.28);
+
+  --text:#E8E8F5; --dim:#8888AA; --mut:#44445A;
+  --r:12px; --R:20px;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;font-size:14px;line-height:1.72;overflow-x:hidden;}
+
+/* progress bar */
+#pb{position:fixed;top:0;left:0;height:3px;width:0%;z-index:1000;border-radius:0 2px 2px 0;transition:width .1s;}
+
+/* sticky dept nav */
+.dept-nav{position:sticky;top:0;z-index:200;background:rgba(7,8,15,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border2);display:flex;overflow-x:auto;scrollbar-width:none;}
+.dept-nav::-webkit-scrollbar{display:none;}
+.dn-btn{flex-shrink:0;padding:13px 18px;font-family:'Baloo 2',cursive;font-size:13px;font-weight:700;color:var(--mut);cursor:pointer;border-bottom:3px solid transparent;transition:all .2s;white-space:nowrap;display:flex;align-items:center;gap:6px;}
+.dn-btn:hover{color:var(--dim);}
+.dn-btn.active-sales{color:var(--sales);border-bottom-color:var(--sales);}
+.dn-btn.active-delivery{color:var(--delivery);border-bottom-color:var(--delivery);}
+.dn-btn.active-hr{color:var(--hr);border-bottom-color:var(--hr);}
+.dn-btn.active-finance{color:var(--finance);border-bottom-color:var(--finance);}
+
+/* reveal */
+.rv{opacity:0;transform:translateY(18px);transition:opacity .55s ease,transform .55s ease;}
+.rv.in{opacity:1;transform:none;}
+.d1{transition-delay:.08s;}.d2{transition-delay:.16s;}.d3{transition-delay:.24s;}
+
+/* ── HERO ── */
+.hero{padding:60px 20px 52px;text-align:center;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;width:800px;height:500px;background:radial-gradient(ellipse,rgba(255,107,107,.08) 0%,rgba(0,201,167,.06) 35%,rgba(156,106,255,.06) 60%,transparent 80%);top:-120px;left:50%;transform:translateX(-50%);pointer-events:none;}
+.hero::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,transparent 50%,var(--bg));pointer-events:none;}
+
+.hero-pill{position:relative;z-index:2;display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.05);border:1px solid var(--border2);border-radius:30px;padding:6px 16px;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);margin-bottom:20px;}
+.hero h1{position:relative;z-index:2;font-family:'Baloo 2',cursive;font-size:clamp(24px,5.5vw,48px);font-weight:800;line-height:1.1;letter-spacing:-.025em;margin-bottom:10px;}
+.h1-line1{color:var(--text);}
+.h1-line2{background:linear-gradient(135deg,var(--sales),var(--delivery),var(--hr),var(--finance));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hero-sub{position:relative;z-index:2;font-size:15px;color:var(--dim);max-width:580px;margin:0 auto 28px;font-weight:500;}
+
+/* dept badges */
+.dept-badges{position:relative;z-index:2;display:flex;gap:8px;justify-content:center;flex-wrap:wrap;}
+.db{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;padding:5px 13px;border-radius:20px;letter-spacing:.08em;border:1px solid;}
+
+/* ── SECTIONS ── */
+section{padding:52px 20px;scroll-margin-top:52px;}
+.wrap{max-width:900px;margin:0 auto;}
+
+/* dept header */
+.dept-header{display:flex;align-items:flex-start;gap:16px;margin-bottom:32px;}
+.dept-icon{width:60px;height:60px;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;border:2px solid;}
+.dept-meta{}
+.dept-eyebrow{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;margin-bottom:5px;}
+.dept-title{font-family:'Baloo 2',cursive;font-size:clamp(22px,4.5vw,34px);font-weight:800;color:var(--text);line-height:1.12;letter-spacing:-.02em;margin-bottom:5px;}
+.dept-desc{font-size:14px;color:var(--dim);font-weight:500;max-width:520px;line-height:1.65;}
+
+/* agent cards grid */
+.agents-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+@media(max-width:600px){.agents-grid{grid-template-columns:1fr;}}
+
+/* ── AGENT CARD ── */
+.agent-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--R);overflow:hidden;transition:border-color .2s,transform .2s;}
+.agent-card:hover{transform:translateY(-2px);}
+
+.ac-head{padding:16px 18px 14px;display:flex;align-items:flex-start;gap:12px;}
+.ac-num{font-family:'Baloo 2',cursive;font-size:15px;font-weight:800;width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.ac-info{}
+.ac-label{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px;}
+.ac-name{font-family:'Baloo 2',cursive;font-size:17px;font-weight:800;color:var(--text);line-height:1.2;}
+
+.ac-body{padding:0 18px 16px;display:flex;flex-direction:column;gap:10px;}
+
+/* what it does */
+.ac-what{font-size:13px;color:var(--dim);font-weight:500;line-height:1.65;}
+
+/* io row */
+.io-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+@media(max-width:440px){.io-row{grid-template-columns:1fr;}}
+.io-box{background:var(--bg3);border-radius:var(--r);padding:10px 12px;border:1px solid var(--border);}
+.io-label{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin-bottom:5px;}
+.io-items{list-style:none;display:flex;flex-direction:column;gap:3px;}
+.io-items li{font-size:12.5px;font-weight:600;color:var(--dim);display:flex;gap:5px;align-items:flex-start;line-height:1.45;}
+.io-items li::before{content:'▸';flex-shrink:0;font-size:10px;margin-top:2px;}
+
+/* example */
+.ac-example{background:var(--bg3);border-radius:var(--r);padding:10px 13px;border-left:3px solid;}
+.ex-label{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin-bottom:4px;color:var(--mut);}
+.ex-text{font-size:12.5px;font-weight:600;color:var(--dim);font-style:italic;line-height:1.55;}
+.ex-text strong{font-style:normal;font-weight:700;}
+
+/* benefit */
+.ac-benefit{display:flex;align-items:flex-start;gap:8px;background:rgba(255,255,255,.03);border-radius:var(--r);padding:9px 12px;border:1px solid var(--border2);}
+.benefit-icon{font-size:16px;flex-shrink:0;}
+.benefit-text{font-size:12.5px;font-weight:700;color:var(--text);line-height:1.45;}
+
+/* tools */
+.ac-tools{display:flex;flex-wrap:wrap;gap:5px;}
+.tool-chip{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;background:var(--bg3);border:1px solid var(--border);color:var(--mut);}
+
+/* BONUS card */
+.bonus-card{background:var(--bg2);border-radius:var(--R);padding:20px 20px;border:2px solid;margin-top:16px;}
+.bonus-head{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;margin-bottom:10px;}
+.bonus-title{font-family:'Baloo 2',cursive;font-size:18px;font-weight:800;color:var(--text);margin-bottom:6px;}
+.bonus-desc{font-size:13.5px;color:var(--dim);font-weight:500;margin-bottom:12px;line-height:1.65;}
+.bonus-items{list-style:none;display:flex;flex-direction:column;gap:5px;}
+.bonus-items li{font-size:13px;font-weight:700;color:var(--dim);display:flex;gap:7px;align-items:flex-start;}
+
+/* START WITH strip */
+.start-strip{background:var(--bg2);border-radius:var(--R);padding:18px 20px;margin-top:16px;border:1px solid var(--border2);display:flex;flex-direction:column;gap:10px;}
+.ss-title{font-family:'Baloo 2',cursive;font-size:15px;font-weight:800;margin-bottom:2px;display:flex;align-items:center;gap:8px;}
+.ss-items{display:flex;flex-direction:column;gap:8px;}
+.ss-item{display:flex;gap:10px;align-items:flex-start;font-size:13px;font-weight:700;color:var(--dim);}
+.ss-rank{font-family:'Baloo 2',cursive;font-size:14px;font-weight:800;flex-shrink:0;line-height:1.4;}
+
+/* divider */
+.dv{border:none;height:1px;margin:8px 0 36px;background:linear-gradient(to right,transparent,var(--border2),transparent);}
+
+/* pill utilities */
+.pill{display:inline-flex;align-items:center;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;padding:2px 8px;border-radius:8px;text-transform:uppercase;letter-spacing:.07em;}
+
+/* footer */
+.doc-footer{text-align:center;padding:36px 20px;border-top:1px solid var(--border);color:var(--mut);font-size:12px;font-weight:600;}
+.doc-footer span{color:var(--finance);}
+</style>
+</head>
+<body>
+
+<div id="pb"></div>
+
+<!-- sticky nav -->
+<div class="dept-nav" id="deptNav">
+  <div class="dn-btn" id="nav-marketing" onclick="scrollTo('s-marketing')">📣 Marketing</div>
+  <div class="dn-btn" id="nav-sales" onclick="scrollTo('s-sales')">🤝 Sales</div>
+  <div class="dn-btn" id="nav-delivery" onclick="scrollTo('s-delivery')">🎓 Delivery</div>
+  <div class="dn-btn" id="nav-hr" onclick="scrollTo('s-hr')">👥 HR</div>
+  <div class="dn-btn" id="nav-finance" onclick="scrollTo('s-finance')">💰 Finance</div>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-pill">🤖 Bharat Unnati AI Fellowship — EdTech AI Agent OS v1.0</div>
+  <h1>
+    <div class="h1-line1">The Complete AI Agent</div>
+    <div class="h1-line2">Operating System for EdTech</div>
+  </h1>
+  <p class="hero-sub">40 production-ready AI agents across Sales, Delivery, HR and Finance — each defined with inputs, outputs, real examples, tools, and direct business benefit for your EdTech institution.</p>
+  <div class="dept-badges">
+    <span class="db" style="color:var(--mktg);border-color:var(--mktg-b);background:var(--mktg-l);">📣 Marketing — 10 Agents</span>
+    <span class="db" style="color:var(--sales);border-color:var(--sales-b);background:var(--sales-l);">🤝 Sales — 10 Agents</span>
+    <span class="db" style="color:var(--delivery);border-color:var(--delivery-b);background:var(--delivery-l);">🎓 Delivery — 10 Agents</span>
+    <span class="db" style="color:var(--hr);border-color:var(--hr-b);background:var(--hr-l);">👥 HR — 10 Agents</span>
+    <span class="db" style="color:var(--finance);border-color:var(--finance-b);background:var(--finance-l);">💰 Finance — 10 Agents</span>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     REFERENCE: MARKETING (from doc)
+════════════════════════════════════════ -->
+<section id="s-marketing">
+<div class="wrap">
+
+  <div class="dept-header rv">
+    <div class="dept-icon" style="background:var(--mktg-l);border-color:var(--mktg-b);">📣</div>
+    <div class="dept-meta">
+      <div class="dept-eyebrow" style="color:var(--mktg);">Department 1 of 5</div>
+      <div class="dept-title">Marketing Agents</div>
+      <div class="dept-desc">Already defined in your reference document. 10 agents covering ad copy, lead qualification, viral content, competitor intelligence, funnel optimization and more.</div>
+    </div>
+  </div>
+
+  <div style="background:var(--bg2);border:1px solid var(--mktg-b);border-radius:var(--R);padding:20px 22px;" class="rv d1">
+    <div style="font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--mktg);margin-bottom:12px;">10 Marketing Agents — Already Defined</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+      <div style="font-size:13px;color:var(--dim);font-weight:600;display:flex;flex-direction:column;gap:6px;">
+        <span>1️⃣ Ad Copy Scoring & Improvement Agent</span>
+        <span>2️⃣ Landing Page Conversion Analyzer</span>
+        <span>3️⃣ Viral Content Generator</span>
+        <span>4️⃣ Lead Qualification AI Agent</span>
+        <span>5️⃣ AI Webinar Topic Generator</span>
+      </div>
+      <div style="font-size:13px;color:var(--dim);font-weight:600;display:flex;flex-direction:column;gap:6px;">
+        <span>6️⃣ Student Persona Generator</span>
+        <span>7️⃣ Competitor Ad Intelligence Agent</span>
+        <span>8️⃣ AI Funnel Optimization Agent</span>
+        <span>9️⃣ WhatsApp Nurture Message Generator</span>
+        <span>🔟 AI Video Script Generator for Ads</span>
+      </div>
+    </div>
+    <div style="margin-top:14px;padding-top:13px;border-top:1px solid var(--border);font-size:13px;color:var(--mktg);font-weight:700;">
+      ✅ Bonus: Workshop Offer Generator (Hormozi-style) — already defined in your reference document above.
+    </div>
+  </div>
+
+</div>
+</section>
+
+<div class="dv"></div>
+
+<!-- ════════════════════════════════════════
+     SALES AGENTS
+════════════════════════════════════════ -->
+<section id="s-sales">
+<div class="wrap">
+
+  <div class="dept-header rv">
+    <div class="dept-icon" style="background:var(--sales-l);border-color:var(--sales-b);">🤝</div>
+    <div class="dept-meta">
+      <div class="dept-eyebrow" style="color:var(--sales);">Department 2 of 5</div>
+      <div class="dept-title">Sales Process Agents</div>
+      <div class="dept-desc">Convert leads into enrolled students. These agents handle every stage from first contact to enrollment — qualification, objections, follow-ups, upsell, and seat-filling — so your sales team closes more with less effort.</div>
+    </div>
+  </div>
+
+  <div class="agents-grid">
+
+    <!-- 1 -->
+    <div class="agent-card rv d1" style="border-color:var(--sales-b);">
+      <div class="ac-head" style="border-bottom:1px solid var(--border);">
+        <div class="ac-num" style="background:var(--sales-l);color:var(--sales);">1</div>
+        <div class="ac-info">
+          <div class="ac-label" style="color:var(--sales);">Sales Agent 01</div>
+          <div class="ac-name">AI Student Enrollment Closer</div>
+        </div>
+      </div>
+      <div class="ac-body">
+        <div class="ac-what">Analyzes a warm lead's profile and conversation history, then generates a personalized closing script — tailored to the student's specific dream outcome, objection pattern, and emotional triggers. Tells the counsellor exactly what to say.</div>
+        <div class="io-row">
+          <div class="io-box">
+            <div class="io-label" style="color:var(--sales);">Input</div>
+            <ul class="io-items">
+              <li>Lead form data (name, course interest, budget)</li>
+              <li>WhatsApp conversation transcript</li>
+              <li>Workshop attendance status</li>
+            </ul>
+          </div>
+          <div class="io-box">
+            <div class="io-label" style="color:var(--delivery);">Output</div>
+            <ul class="io-items">
+              <li>Personalized closing script (3–5 lines)</li>
+              <li>Top 2 objections to expect</li>
+              <li>Responses to each objection</li>
+              <li>Recommended offer/discount framing</li>
+            </ul>
+          </div>
+        </div>
+        <div class="ac-example" style="border-color:var(--sales-b);">
+          <div class="ex-label">Example Output</div>
+          <div class="ex-text"><strong>"Rahul, you mentioned you're worried about placement. Let me show you exactly what our last 3 students who had the same fear now earn — and what they built in Week 8."</strong></div>
+        </div>
+        <div class="ac-benefit">
+          <div class="benefit-icon">📈</div>
+          <div class="benefit-text">Increases counsellor conversion rate by 30–40%. Every closing conversation is now data-driven, not dependent on individual skill.</div>
+        </div>
+        <div class="ac-tools">
+          <span class="tool-chip">n8n</span><span class="tool-chip">CRM Webhook</span><span class="tool-chip">Claude/GPT</span><span class="tool-chip">WhatsApp API</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2 -->
+    <div class="agent-card rv d2">
+      <div class="ac-head" style="border-bottom:1px solid var(--border);">
+        <div class="ac-num" style="background:var(--sales-l);color:var(--sales);">2</div>
+        <div class="ac-info">
+          <div class="ac-label" style="color:var(--sales);">Sales Agent 02</div>
+          <div class="ac-name">Objection Handler Agent</div>
+        </div>
+      </div>
+      <div class="ac-body">
+        <div class="ac-what">When a lead says "I'll think about it", "fees is too high", or "not the right time" — the agent instantly generates 3 evidence-based, empathetic responses calibrated to Indian students' specific context (family approval, EMI concern, placement fear).</div>
+        <div class="io-row">
+          <div class="io-box">
+            <div class="io-label" style="color:var(--sales);">Input</div>
+            <ul class="io-items">
+              <li>Exact objection text/phrase</li>
+              <li>Student profile (city, background)</li>
+              <li>Course being sold</li>
+            </ul>
+          </div>
+          <div class="io-box">
+            <div class="io-label" style="color:var(--delivery);">Output</div>
+            <ul class="io-items">
+              <li>3 response options (soft / direct / story)</li>
+              <li>Best option recommended</li>
+              <li>Follow-up question to ask</li>
+            </ul>
+          </div>
+        </div>
+        <div class="ac-example" style="border-color:var(--sales-b);">
+          <div class="ex-label">Objection → Response</div>
+          <div class="ex-text">Objection: <strong>"₹35,000 is too much."</strong> → Response: <strong>"Samajh sakta hoon. Let me show you the math — by Month 3, most of our partners have already earned this back from real projects."</strong></div>
+        </div>
+        <div class="ac-benefit">
+          <div class="benefit-icon">🎯</div>
+          <div class="benefit-text">Eliminates "I don't know what to say" moments for new counsellors. Makes every sales conversation handled with the wisdom of your best closer.</div>
+        </div>
+        <div class="ac-tools">
+          <span class="tool-chip">n8n</span><span class="tool-chip">Claude/GPT</span><span class="tool-chip">Google Sheets</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3 -->
+    <div class="agent-card rv d1">
+      <div class="ac-head" style="border-bottom:1px solid var(--border);">
+        <div class="ac-num" style="background:var(--sales-l);color:var(--sales);">3</div>
+        <div class="ac-info">
+          <div class="ac-label" style="color:var(--sales);">Sales Agent 03</div>
+          <div class="ac-name">Parent Conversation Preparation Agent</div>
+        </div>
+      </div>
+      <div class="ac-body">
+        <div class="ac-what">In Indian EdTech, parents often make the final decision. This agent generates a complete parent conversation guide — tailored to the parent's likely concerns (ROI, credibility, job guarantee) based on the student's profile and city tier.</div>
+        <div class="io-row">
+          <div class="io-box">
+            <div class="io-label" style="color:var(--sales);">Input</div>
+            <ul class="io-items">
+              <li>Student name, course, city tier</li>
+              <li>Parent's profession (if known)</li>
+              <li>Previous conversation context</li>
+            </ul>
+          </div>
+          <div class="io-box">
+            <div class="io-label" style="color:var(--delivery);">Output</div>
+            <ul class="io-items">
+              <li>Hindi + English conversation script</li>
+              <li>ROI explanation in simple language</li>
+              <li>3 credibility proof points</li>
+              <li>How to explain the income guarantee</li>
+            </ul>
+          </div>
+        </div>
+        <div class="ac-example" style="border-color:var(--sales-b);">
+          <div class="ex-label">Example Output (Hindi)</div>
+          <div class="ex-text"><strong>"Uncle, ₹35,000 mein AICTE certificate + real project experience + ₹10,000 guaranteed income. Teen mahine mein paise wapas."</strong></div>
+        </div>
+        <div class="ac-benefit">
+          <div class="benefit-icon">👨‍👩‍👧</div>
+          <div class="benefit-text">Critical for Tier 2/3 cities where parent approval drives 70%+ of enrollment decisions. Solves the biggest conversion bottleneck in Indian EdTech.</div>
+        </div>
+        <div class="ac-tools">
+          <span class="tool-chip">n8n</span><span class="tool-chip">Claude/GPT</span><span class="tool-chip">WhatsApp Template</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4 -->
+    <div class="agent-card rv d2">
+      <div class="ac-head" style="border-bottom:1px solid var(--border);">
+        <div class="ac-num" style="background:var(--sales-l);color:var(--sales);">4</div>
+        <div class="ac-info">
+          <div class="ac-label" style="color:var(--sales);">Sales Agent 04</div>
+          <div class="ac-name">Batch Seat-Filling Urgency Agent</div>
+        </div>
+      </div>
+      <div class="ac-body">
+        <div class="ac-what">7 days before a batch closes, this agent automatically identifies all warm leads who haven't enrolled, analyzes why they haven't converted, and generates personalized urgency messages — with honest scarcity framing (actual seats remaining, not fake timers).</div>
+        <div class="io-row">
+          <div class="io-box">
+            <div class="io-label" style="color:var(--sales);">Input</div>
+            <ul class="io-items">
+              <li>Warm leads list from CRM</li>
+              <li>Seats remaining (actual count)</li>
+              <li>Days to batch start</li>
+              <li>Each lead's last touchpoint</li>
+            </ul>
+          </div>
+          <div class="io-box">
+            <div class="io-label" style="color:var(--delivery);">Output</div>
+            <ul class="io-items">
+              <li>Personalized WhatsApp message per lead</li>
+              <li>Specific reason to act now (not generic)</li>
+              <li>Counsellor call priority list</li>
+            </ul>
+          </div>
+        </div>
+        <div class="ac-example" style="border-color:var(--sales-b);">
+          <div class="ex-label">Auto-generated WhatsApp</div>
+          <div class="ex-text"><strong>"Priya, 3 seats bache hain Saturday ke batch mein. Tumne last week workshop attend ki thi — ek final doubt hai toh 5 min baat karte hain?"</strong></div>
+        </div>
+        <div class="ac-benefit">
+          <div class="benefit-icon">⏰</div>
+          <div class="benefit-text">Fills batches to capacity without last-minute panic discounting. Honest urgency converts faster than manufactured pressure.</div>
+        </div>
+        <div class="ac-tools">
+          <span class="tool-chip">n8n Scheduler</span><span class="tool-chip">CRM API</span><span class="tool-chip">WhatsApp Business</span><span class="tool-chip">Claude</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5 -->
+    <div class="agent-card rv d1">
+      <div class="ac-head" style="border-bottom:1px solid var(--border);">
+        <div class="ac-num" style="background:var(--sales-l);color:var(--sales);">5</div>
+        <div class="ac-info">
+          <div class="ac-label" style="color:var(--sales);">Sales Agent 05</div>
+          <div class="ac-name">Referral Generation Agent</div>
+        </div>
+      </div>
+      <div class="ac-body">
+        <div class="ac-what">Triggered 2 weeks after enrollment, this agent identifies your happiest students (high engagement, positive messages), generates a personalized referral ask, and creates a shareable message they can forward to their college friends — making referral a systematic process, not accidental.</div>
+        <div class="io-row">
+          <div class="io-box">
+            <div class="io-label" style="color:var(--sales);">Input</div>
+            <ul class="io-items">
+              <li>Student engagement data</li>
+              <li>Positive sentiment signals</li>
+              <li>Student's college / network</li>
+            </ul>
+          </div>
+          <div class="io-box">
+            <div class="io-label" style="color:var(--delivery);">Output</div>
+            <ul class="io-items">
+              <li>Personal referral request message</li>
+              <li>Shareable forward text for student</li>
+              <li>Referral incentive framing</li>
+            </ul>
+          </div>
+        </div>
+        <div class="ac-example" style="border-color:var(--sales-b);">
+          <div class="ex-label">Shareable Forward (student sends to friend)</div>
+          <div class="ex-text"><strong>"Bhai, main Bharat Unnati ka Project Paisa kar raha hoon — already ₹20K earn kar liya Week 8 mein. Tujhe genuinely recommend karunga. Link yeh hai 👇"</strong></div>
+        </div>
+        <div class="ac-benefit">
+          <div class="benefit-icon">🔗</div>
+          <div class="benefit-text">Referral leads convert 4× better than cold leads and cost ₹0 in acquisition. Systematizing this one behavior can fill 30–40% of seats organically.</div>
+        </div>
+        <div class="ac-tools">
+          <span class="tool-chip">n8n Trigger</span><span class="tool-chip">LMS Data</span><span class="tool-chip">WhatsApp API</span><span class="tool-chip">Claude</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6 -->
+    <div class="agent-card rv d2">
+      <div class="ac-head" style="border-bottom:1px solid var(--border);">
+        <div class="ac-num" style="background:var(--sales-l);color:var(--sales);">6</div>
+        <div class="ac-info">
+          <div class="ac-label" style="color:var(--sales);">Sales Agent 06</div>
+          <div class="ac-name">Re-Engagement Agent for Lost Leads</div>
+        </div>
+      </div>
+      <div class="ac-body">
+        <div class="ac-what">Leads who went cold 30–90 days ago are a goldmine. This agent analyzes WHY each lead went cold (price? timing? competition?), then generates a context-aware re-engagement message timed to a new trigger event (new batch, success story, fee offer).</div>
+        <div class="io-row">
+          <div class="io-box">
+            <div class="io-label" style="color:var(--sales);">Input</div>
+            <ul class="io-items">
+              <li>Cold lead database (30–90 day)</li>
+              <li>Last conversation notes</li>
+              <li>New hook / trigger event</li>
+            </ul>
+          </div>
+          <div class="io-box">
+            <div class="io-label" style="color:var(--delivery);">Output</div>
+            <ul class="io-items">
+              <li>Re-engagement message per lead</li>
+              <li>New angle different from last time</li>
+              <li>Best time to send (day + hour)</li>
+            </ul>
+          </div>
+        </div>
+        <div class="ac-example" style="border-color:var(--sales-b);">
+          <div class="ex-label">Re-engagement Example</div>
+          <div class="ex-text"><strong>"Karan, 3 months pehle baat ki thi. Tab fees concern thi — ab EMI option add ki hai: ₹12,000 × 3. Aur Arjun ne last batch mein already ₹24,000 earn kar liya. Ek call karein?"</strong></div>
+        </div>
+        <div class="ac-benefit">
+          <div class="benefit-icon">♻️</div>
+          <div class="benefit-text">Revives leads you paid to acquire but never converted. A 10% re-engagement rate on 500 cold leads = 50 additional enrollments.</div>
+        </div>
+        <div class="ac-tools">
+          <span class="tool-chip">n8n Scheduler</span><span class="tool-chip">CRM Webhook</span><span class="tool-chip">Claude/Groq</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7 -->
+    <div class="agent-card rv d1">
+      <div class="ac-head" style="border-bottom:1px solid var(--border);">
+        <div class="ac-num" style="background:var(--sales-l);color:var(--sales);">7</div>
+        <div class="ac-info">
+          <div class="ac-label" style="color:var(--sales);">Sales Agent 07</div>
+          <div class="ac-name">Upsell & Cross-Sell Recommendation Agent</div>
+        </div>
+      </div>
+      <div class="ac-body">
+        <div class="ac-what">After a student completes Module 1 (n8n), this agent analyzes their project performance and learning pace, then generates a personalized upsell recommendation — framed around their specific career goal — for Module 2 (CrewAI) or the premium full-stack track.</div>
+        <div class="io-row">
+          <div class="io-box">
+            <div class="io-label" style="color:var(--sales);">Input</div>
+            <ul class="io-items">
+              <li>Module 1 completion status</li>
+              <li>Project performance scores</li>
+              <li>Student's stated career goal</li>
+            </ul>
+          </div>
+          <div class="io-box">
+            <div class="io-label" style="color:var(--delivery);">Output</div>
+            <ul class="io-items">
+              <li>Upsell message personalized to career goal</li>
+              <li>ROI calculation for the upgrade</li>
+              <li>Best offer/bundle recommendation</li>
+            </ul>
+          </div>
+        </div>
+        <div class="ac-example" style="border-color:var(--sales-b);">
+          <div class="ex-label">Personalized Upsell</div>
+          <div class="ex-text"><strong>"Ananya, n8n mein tujhe 9/10 mila. CrewAI add kar leti hai toh healthcare AI projects access hote hain — jo ₹75,000–1.5L range ke hain. Yeh next step hai tere liye."</strong></div>
+        </div>
+        <div class="ac-benefit">
+          <div class="benefit-icon">💎</div>
+          <div class="benefit-text">Increases average revenue per student by 40–60%. Personalized upsells convert 3× better than generic upgrade emails.</div>
+        </div>
+        <div class="ac-tools">
+          <span class="tool-chip">LMS Data</span><span class="tool-chip">n8n</span><span class="tool-chip">Claude</span><span class="tool-chip">Razorpay Link</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 8 -->
+    <div class="agent-card rv d2">
+      <div class="ac-head" style="border-bottom:1px solid var(--border);">
+        <div class="ac-num" style="background:var(--sales-l);color:var(--sales);">8</div>
+        <div class="ac-info">
+          <div class="ac-label" style="color:var(--sales);">Sales Agent 08</div>
+          <div class="ac-name">Testimonial & Social Proof Harvester</div>
+        </div>
+      </div>
+      <div class="ac-body">
+        <div class="ac-what">After every project delivery, this agent automatically reaches out to the student, collects a structured success story (what they built, what they earned, how they feel), formats it into a testimonial, and generates a WhatsApp-ready social proof card for the sales team to use immediately.</div>
+        <div class="io-row">
+          <div class="io-box">
+            <div class="io-label" style="color:var(--sales);">Input</div>
+            <ul class="io-items">
+              <li>Project completion trigger (from CRM)</li>
+              <li>Student earnings amount</li>
+              <li>Project type and industry</li>
+            </ul>
+          </div>
+          <div class="io-box">
+            <div class="io-label" style="color:var(--delivery);">Output</div>
+            <ul class="io-items">
+              <li>Structured testimonial (3 formats)</li>
+              <li>WhatsApp-shareable proof message</li>
+              <li>LinkedIn post draft for student</li>
+              <li>Landing page quote extract</li>
+            </ul>
+          </div>
+        </div>
+        <div class="ac-example" style="border-color:var(--sales-b);">
+          <div class="ex-label">Auto-Formatted Testimonial</div>
+          <div class="ex-text"><strong>"Vikram S., 22 yrs, Mysuru — Earned ₹20,000 on his first WhatsApp Chatbot project in Week 10. 'Main soch bhi nahi sakta tha ki itni jaldi real clients ke liye kaam karunga.'"</strong></div>
+        </div>
+        <div class="ac-benefit">
+          <div class="benefit-icon">⭐</div>
+          <div class="benefit-text">Fresh social proof is the #1 sales accelerant in Indian EdTech. Every new student success story, automatically captured and deployed within 24 hours.</div>
+        </div>
+        <div class="ac-tools">
+          <span class="tool-chip">n8n Trigger</span><span class="tool-chip">WhatsApp API</span><span class="tool-chip">Claude</span><span class="tool-chip">Google Forms</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 9 -->
+    <div class="agent-card rv d1">
+      <div class="ac-head" style="border-bottom:1px solid var(--border);">
+        <div class="ac-num" style="background:var(--sales-l);color:var(--sales);">9</div>
+        <div class="ac-info">
+          <div class="ac-label" style="color:var(--sales);">Sales Agent 09</div>
+          <div class="ac-name">Workshop-to-Enrollment Conversion Agent</div>
+        </div>
+      </div>
+      <div class="ac-body">
+        <div class="ac-what">After every free workshop, within 60 minutes, this agent analyzes each attendee's engagement signals (questions asked, poll responses, time stayed), segments them into Hot/Warm/Cold, and dispatches a personalized follow-up message to each — not a generic "thanks for attending" blast.</div>
+        <div class="io-row">
+          <div class="io-box">
+            <div class="io-label" style="color:var(--sales);">Input</div>
+            <ul class="io-items">
+              <li>Workshop attendance log</li>
+              <li>Questions asked during Q&A</li>
+              <li>Poll responses</li>
+              <li>Time on workshop</li>
+            </ul>
+          </div>
+          <div class="io-box">
+            <div class="io-label" style="color:var(--delivery);">Output</div>
+            <ul class="io-items">
+              <li>Attendee segmentation (Hot/Warm/Cold)</li>
+              <li>Personalized follow-up per attendee</li>
+              <li>Counsellor call list (hot leads, ranked)</li>
+              <li>72-hour follow-up sequence</li>
+            </ul>
+          </div>
+        </div>
+        <div class="ac-example" style="border-color:var(--sales-b);">
+          <div class="ex-label">Post-Workshop Hot Lead Message</div>
+          <div class="ex-text"><strong>"Deepa, aaj workshop mein tumne n8n ka WhatsApp integration waala question poocha — bahut relevant tha! Hum exactly yeh Week 2 mein build karte hain. Slot available hai Saturday ke batch mein."</strong></div>
+        </div>
+        <div class="ac-benefit">
+          <div class="benefit-icon">🔥</div>
+          <div class="benefit-text">Workshop-to-enrollment conversion typically jumps from 8–12% to 22–28% with personalized follow-up within 1 hour of the session.</div>
+        </div>
+        <div class="ac-tools">
+          <span class="tool-chip">Zoom/Meet API</span><span class="tool-chip">n8n</span><span class="tool-chip">Claude</span><span class="tool-chip">WhatsApp</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 10 -->
+    <div class="agent-card rv d2">
+      <div class="ac-head" style="border-bottom:1px solid var(--border);">
+        <div class="ac-num" style="background:var(--sales-l);color:var(--sales);">10</div>
+        <div class="ac-info">
+          <div class="ac-label" style="color:var(--sales);">Sales Agent 10</div>
+          <div class="ac-name">Sales Pipeline Health Monitor</div>
+        </div>
+      </div>
+      <div class="ac-body">
+        <div class="ac-what">Every Monday morning, this agent scans the entire CRM, analyzes conversion rates at each pipeline stage, identifies where leads are stalling, and generates a weekly sales health report with specific actions for the sales manager — not just data, but diagnosis and prescription.</div>
+        <div class="io-row">
+          <div class="io-box">
+            <div class="io-label" style="color:var(--sales);">Input</div>
+            <ul class="io-items">
+              <li>Full CRM pipeline data</li>
+              <li>Stage-wise conversion rates</li>
+              <li>Individual counsellor performance</li>
+            </ul>
+          </div>
+          <div class="io-box">
+            <div class="io-label" style="color:var(--delivery);">Output</div>
+            <ul class="io-items">
+              <li>Pipeline health score (0–100)</li>
+              <li>Biggest drop-off stage identified</li>
+              <li>Top 3 corrective actions</li>
+              <li>Counsellor coaching priorities</li>
+              <li>Revenue forecast for the week</li>
+            </ul>
+          </div>
+        </div>
+        <div class="ac-example" style="border-color:var(--sales-b);">
+          <div class="ex-label">Monday Report Insight</div>
+          <div class="ex-text"><strong>"Drop-off issue: 68% of leads are stalling at 'Parent Call' stage. Recommended fix: Deploy Parent Conversation Script to all counsellors before Thursday calls."</strong></div>
+        </div>
+        <div class="ac-benefit">
+          <div class="benefit-icon">📊</div>
+          <div class="benefit-text">Sales managers stop guessing and start fixing. Every week's data becomes a specific action, not a dashboard that nobody reads.</div>
+        </div>
+        <div class="ac-tools">
+          <span class="tool-chip">CRM API</span><span class="tool-chip">n8n Scheduler</span><span class="tool-chip">Claude</span><span class="tool-chip">Google Sheets</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- BEST 3 START WITH -->
+  <div class="start-strip rv d3" style="border-color:var(--sales-b);">
+    <div class="ss-title" style="color:var(--sales);">🔥 Best 3 Sales Agents to Build First</div>
+    <div class="ss-items">
+      <div class="ss-item"><span class="ss-rank" style="color:var(--sales);">1️⃣</span><span><strong style="color:var(--text);">Workshop-to-Enrollment Conversion Agent</strong> — single highest revenue impact per deploy</span></div>
+      <div class="ss-item"><span class="ss-rank" style="color:var(--sales);">2️⃣</span><span><strong style="color:var(--text);">Objection Handler Agent</strong> — solves the counsellor skill gap immediately</span></div>
+      <div class="ss-item"><span class="ss-rank" style="color:var(--sales);">3️⃣</span><span><strong style="color:var(--text);">Batch Seat-Filling Urgency Agent</strong> — fills every batch to capacity before closing</span></div>
+    </div>
+  </div>
+
+</div>
+</section>
+
+<div class="dv"></div>
+
+<!-- ════════════════════════════════════════
+     DELIVERY AGENTS
+════════════════════════════════════════ -->
+<section id="s-delivery">
+<div class="wrap">
+
+  <div class="dept-header rv">
+    <div class="dept-icon" style="background:var(--delivery-l);border-color:var(--delivery-b);">🎓</div>
+    <div class="dept-meta">
+      <div class="dept-eyebrow" style="color:var(--delivery);">Department 3 of 5</div>
+      <div class="dept-title">Delivery Process Agents</div>
+      <div class="dept-desc">Transform training from an event into an outcome. These agents monitor student progress, predict dropouts before they happen, automate feedback loops, and ensure every student reaches their learning milestone — at scale, without burning out your instructors.</div>
+    </div>
+  </div>
+
+  <div class="agents-grid">
+
+    <!-- 1 -->
+    <div class="agent-card rv d1" style="border-color:var(--delivery-b);">
+      <div class="ac-head" style="border-bottom:1px solid var(--border);">
+        <div class="ac-num" style="background:var(--delivery-l);color:var(--delivery);">1</div>
+        <div class="ac-info">
+          <div class="ac-label" style="color:var(--delivery);">Delivery Agent 01</div>
+          <div class="ac-name">Student Dropout Prediction Agent</div>
+        </div>
+      </div>
+      <div class="ac-body">
+        <div class="ac-what">Monitors 7 behavioral signals in real time — session attendance, assignment submission rate, WhatsApp response latency, question frequency, project progress — and flags students showing dropout patterns 2 weeks before they actually drop, giving mentors time to intervene.</div>
+        <div class="io-row">
+          <div class="io-box">
+            <div class="io-label" style="color:var(--delivery);">Input</div>
+            <ul class="io-items">
+              <li>LMS attendance data</li>
+              <li>Assignment submission timestamps</li>
+              <li>WhatsApp activity signals</li>
+              <li>Project milestone status</li>
+            </ul>
+          </div>
+          <div class="io-box">
+            <div class="io-label" style="color:var(--delivery);">Output</div>
+            <ul class="io-items">
+              <li>Dropout risk score per student</li>
+              <li>Primary risk reason identified</li>
+              <li>Recommended intervention action</li>
+              <li>Alert to assigned mentor</li>
+            </ul>
+          </div>
+        </div>
+        <div class="ac-example" style="border-color:var(--delivery-b);">
+          <div class="ex-label">Alert to Mentor</div>
+          <div class="ex-text"><strong>"⚠ Suresh — dropout risk: HIGH. Missed 3 sessions, 0 assignment submissions this week. Primary reason: likely struggling with Python basics. Recommend: 1 personal call + share Python shortcut resource."</strong></div>
+        </div>
+        <div class="ac-benefit">
+          <div class="benefit-icon">🛡️</div>
+          <div class="benefit-text">Reduces dropout rates by 40–60%. Every student retained is guaranteed income not at risk — and a potential future testimonial and referral source.</div>
+        </div>
+        <div class="ac-tools">
+          <span class="tool-chip">LMS API</span><span class="tool-chip">n8n</span><span class="tool-chip">Claude</span><span class="tool-chip">Slack Alert</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2 -->
+    <div class="agent-card rv d2">
+      <div class="ac-head" style="border-bottom:1px solid var(--border);">
+        <div class="ac-num" style="background:var(--delivery-l);color:var(--delivery);">2</div>
+        <div class="ac-info">
+          <div class="ac-label" style="color:var(--delivery);">Delivery Agent 02</div>
+          <div class="ac-name">AI Doubt Resolution Agent</div>
+        </div>
+      </div>
+      <div class="ac-body">
+        <div class="ac-what">When a student posts a technical doubt in the WhatsApp group or LMS discussion forum, this agent instantly provides a first-level answer — with step-by-step explanation, a relevant code snippet if needed, and a "does this solve it?" follow-up. Only escalates to human mentor if unresolved after 10 minutes.</div>
+        <div class="io-row">
+          <div class="io-box">
+            <div class="io-label" style="color:var(--delivery);">Input</div>
+            <ul class="io-items">
+              <li>Student's doubt text / screenshot</li>
+              <li>Current module & week number</li>
+              <li>Student's skill level</li>
+            </ul>
+          </div>
+          <div class="io-box">
+            <div class="io-label" style="color:var(--delivery);">Output</div>
+            <ul class="io-items">
+              <li>Step-by-step solution (student-language)</li>
+              <li>Code snippet (n8n workflow / Python)</li>
+              <li>Related concept link from curriculum</li>
+              <li>Escalation flag if unsolvable</li>
+            </ul>
+          </div>
+        </div>
+        <div class="ac-example" style="border-color:var(--delivery-b);">
+          <div class="ex-label">Auto-Response Example</div>
+          <div class="ex-text"><strong>"Riya, n8n ka HTTP Request node mein 401 error aa raha hai toh credentials missing hain. Yeh step try karo: Settings → Credentials → Add New → Bearer Token mein paste karo. Screenshot bhejo agar nahi hua."</strong></div>
+        </div>
+        <div class="ac-benefit">
+          <div class="benefit-icon">⚡</div>
+          <div class="benefit-text">Reduces doubt resolution time from 4–8 hours to under 2 minutes. Students unblock 10× faster. Instructor burnout drops significantly.</div>
+        </div>
+        <div class="ac-tools">
+          <span class="tool-chip">WhatsApp API</span><span class="tool-chip">n8n</span><span class="tool-chip">Claude/GPT-4</span><span class="tool-chip">RAG on Curriculum</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3 -->
+    <div class="agent-card rv d1">
+      <div class="ac-head" style="border-bottom:1px solid var(--border);">
+        <div class="ac-num" style="background:var(--delivery-l);color:var(--delivery);">3</div>
+        <div class="ac-info">
+          <div class="ac-label" style="color:var(--delivery);">Delivery Agent 03</div>
+          <div class="ac-name">Automated Assignment Feedback Agent</div>
+        </div>
+      </div>
+      <div class="ac-body">
+        <div class="ac-what">When a student submits an n8n workflow or CrewAI project, this agent evaluates it against a QC rubric (error handling, edge cases, output quality, code structure), generates detailed feedback, and assigns a score — so instructors review insights, not raw submissions.</div>
+        <div class="io-row">
+          <div class="io-box">
+            <div class="io-label" style="color:var(--delivery);">Input</div>
+            <ul class="io-items">
+              <li>Student's workflow export / code file</li>
+              <li>Assignment rubric criteria</li>
+              <li>Week and module context</li>
+            </ul>
+          </div>
+          <div class="io-box">
+            <div class="io-label" style="color:var(--delivery);">Output</div>
+            <ul class="io-items">
+              <li>Score out of 10 (per criterion)</li>
+              <li>What's done well (positive)</li>
+              <li>2–3 specific improvements</li>
+              <li>Pass/Revise/Redo recommendation</li>
+            </ul>
+          </div>
+        </div>
+        <div class="ac-example" style="border-color:var(--delivery-b);">
+          <div class="ex-label">Feedback Example</div>
+          <div class="ex-text"><strong>"Score: 7.5/10. ✅ Error handling implemented well. ✅ WhatsApp trigger works. ❌ No fallback if API fails. ❌ Missing test with null data. Revise and resubmit — almost there!"</strong></div>
+        </div>
+        <div class="ac-benefit">
+          <div class="benefit-icon">📝</div>
+          <div class="benefit-text">Instructors spend time teaching, not grading. Every student gets instant, consistent, detailed feedback — not a one-line "good job" 3 days later.</div>
+        </div>
+        <div class="ac-tools">
+          <span class="tool-chip">LMS Webhook</span><span class="tool-chip">n8n</span><span class="tool-chip">Claude/GPT-4</span><span class="tool-chip">Google Drive</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4 -->
+    <div class="agent-card rv d2">
+      <div class="ac-head" style="border-bottom:1px solid var(--border);">
+        <div class="ac-num" style="background:var(--delivery-l);color:var(--delivery);">4</div>
+        <div class="ac-info">
+          <div class="ac-label" style="color:var(--delivery);">Delivery Agent 04</div>
+          <div class="ac-name">Weekly Progress Report Generator</div>
+        </div>
+      </div>
+      <div class="ac-body">
+        <div class="ac-what">Every Sunday evening, this agent auto-generates a personalized weekly progress report for each student — showing their trajectory, what they mastered, what needs work, and their personalized action plan for next week. Sent to student + optionally to parent.</div>
+        <div class="io-row">
+          <div class="io-box">
+            <div class="io-label" style="color:var(--delivery);">Input</div>
+            <ul class="io-items">
+              <li>Attendance log for the week</li>
+              <li>Assignment scores</li>
+              <li>Doubt resolution history</li>
+              <li>Project milestone progress</li>
+            </ul>
+          </div>
+          <div class="io-box">
+            <div class="io-label" style="color:var(--delivery);">Output</div>
+            <ul class="io-items">
+              <li>Personal progress score (0–100)</li>
+              <li>"This week you learned…" summary</li>
+              <li>"Focus on this next week" — 2 actions</li>
+              <li>Encouragement message (not generic)</li>
+            </ul>
+          </div>
+        </div>
+        <div class="ac-example" style="border-color:var(--delivery-b);">
+          <div class="ex-label">Student Report Snippet</div>
+          <div class="ex-text"><strong>"Pooja — Week 5 score: 82/100. You mastered HTTP Request nodes and solved a real doubt independently. Next week: focus on error-handling patterns. You're on track for the Week 6 gate. Keep going! 🚀"</strong></div>
+        </div>
+        <div class="ac-benefit">
+          <div class="benefit-icon">📈</div>
+          <div class="benefit-text">Students who receive weekly personalized progress reports have 3× higher completion rates. Parents feel informed and valued — reducing refund requests.</div>
+        </div>
+        <div class="ac-tools">
+          <span class="tool-chip">LMS API</span><span class="tool-chip">n8n Sunday Scheduler</span><span class="tool-chip">Claude</span><span class="tool-chip">WhatsApp</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5 -->
+    <div class="agent-card rv d1">
+      <div class="ac-head" style="border-bottom:1px solid var(--border);">
+        <div class="ac-num" style="background:var(--delivery-l);color:var(--delivery);">5</div>
+        <div class="ac-info">
+          <div class="ac-label" style="color:var(--delivery);">Delivery Agent 05</div>
+          <div class="ac-name">Live Session Summary Agent</div>
+        </div>
+      </div>
+      <div class="ac-body">
+        <div class="ac-what">Within 30 minutes of every live session ending, this agent processes the session transcript, generates a structured summary with key concepts, code examples used, questions asked, and a "30-second recap" message — and sends it to every student who attended and those who missed.</div>
+        <div class="io-row">
+          <div class="io-box">
+            <div class="io-label" style="color:var(--delivery);">Input</div>
+            <ul class="io-items">
+              <li>Session recording transcript</li>
+              <li>Session date, week, topic</li>
+              <li>Attendees vs. absent list</li>
+            </ul>
+          </div>
+          <div class="io-box">
+            <div class="io-label" style="color:var(--delivery);">Output</div>
+            <ul class="io-items">
+              <li>3-bullet key takeaways</li>
+              <li>Code/workflow examples used</li>
+              <li>Questions raised + answers given</li>
+              <li>Homework reminder with context</li>
+              <li>"Missed it?" message for absentees</li>
+            </ul>
+          </div>
+        </div>
+        <div class="ac-example" style="border-color:var(--delivery-b);">
+          <div class="ex-label">Session Summary (sent 30 mins after class)</div>
+          <div class="ex-text"><strong>"Today's session covered: (1) HTTP Auth in n8n, (2) Error branches, (3) Live WhatsApp webhook demo. Key insight: always test with null responses. Recording: [link]. Homework: Build a 3-node workflow by Thursday."</strong></div>
+        </div>
+        <div class="ac-benefit">
+          <div class="benefit-icon">📋</div>
+          <div class="benefit-text">Zero knowledge loss between sessions. Students who miss a class rejoin the next without confusion. Instructor's expertise is captured and preserved permanently.</div>
+        </div>
+        <div class="ac-tools">
+          <span class="tool-chip">Zoom Transcript API</span><span class="tool-chip">n8n</span><span class="tool-chip">Whisper/Claude</span><span class="tool-chip">WhatsApp</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6 -->
+    <div class="agent-card rv d2">
+      <div class="ac-head" style="border-bottom:1px solid var(--border);">
+        <div class="ac-num" style="background:var(--delivery-l);color:var(--delivery);">6</div>
+        <div class="ac-info">
+          <div class="ac-label" style="color:var(--delivery);">Delivery Agent 06</div>
+          <div class="ac-name">Project Readiness Evaluation Agent</div>
+        </div>
+      </div>
+      <div class="ac-body">
+        <div class="ac-what">Before a student is assigned to a real client project, this agent runs a structured evaluation — analyzing their gate project scores, attendance record, doubt resolution capability, and peer feedback — and generates a Client Readiness Report that tells the Lead Engineer exactly which service type to assign them to.</div>
+        <div class="io-row">
+          <div class="io-box">
+            <div class="io-label" style="color:var(--delivery);">Input</div>
+            <ul class="io-items">
+              <li>Gate project scores (Module 1 & 2)</li>
+              <li>Attendance percentage</li>
+              <li>Self-resolution rate for doubts</li>
+              <li>Peer collaboration feedback</li>
+            </ul>
+          </div>
+          <div class="io-box">
+            <div class="io-label" style="color:var(--delivery);">Output</div>
+            <ul class="io-items">
+              <li>Client readiness tier (1 / 2 / 3)</li>
+              <li>Recommended first project type</li>
+              <li>Skills to strengthen before deploying</li>
+              <li>Suggested mentor pairing</li>
+            </ul>
+          </div>
+        </div>
+        <div class="ac-example" style="border-color:var(--delivery-b);">
+          <div class="ex-label">Readiness Report Example</div>
+          <div class="ex-text"><strong>"Mohammed Ali — Tier 2 Ready. Strong n8n skills (9/10). CrewAI still developing (6.5/10). Recommend: WhatsApp Chatbot project first (not RAG). Pair with Tier 3 mentor. Ready in: 1 week."</strong></div>
+        </div>
+        <div class="ac-benefit">
+          <div class="benefit-icon">🏆</div>
+          <div class="benefit-text">Eliminates guesswork in project assignment. Right student, right project = high-quality delivery = happy client = more projects = better student income.</div>
+        </div>
+        <div class="ac-tools">
+          <span class="tool-chip">LMS Data</span><span class="tool-chip">n8n</span><span class="tool-chip">Claude</span><span class="tool-chip">Notion DB</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7 -->
+    <div class="agent-card rv d1">
+      <div class="ac-head" style="border-bottom:1px solid var(--border);">
+        <div class="ac-num" style="background:var(--delivery-l);color:var(--delivery);">7</div>
+        <div class="ac-info">
+          <div class="ac-label" style="color:var(--delivery);">Delivery Agent 07</div>
+          <div class="ac-name">Curriculum Freshness Monitor</div>
+        </div>
+      </div>
+      <div class="ac-body">
+        <div class="ac-what">n8n and CrewAI update their features frequently. This agent monitors release notes, community forums, and documentation for both platforms every week, identifies changes that affect your curriculum, and generates an "update brief" for instructors — so your content never becomes stale.</div>
+        <div class="io-row">
+          <div class="io-box">
+            <div class="io-label" style="color:var(--delivery);">Input</div>
+            <ul class="io-items">
+              <li>n8n release notes (web scrape)</li>
+              <li>CrewAI GitHub changelog</li>
+              <li>Current curriculum module map</li>
+            </ul>
+          </div>
+          <div class="io-box">
+            <div class="io-label" style="color:var(--delivery);">Output</div>
+            <ul class="io-items">
+              <li>"Update urgency" rating per change</li>
+              <li>Which module/week is affected</li>
+              <li>Suggested curriculum edit (specific)</li>
+              <li>New feature to add as bonus content</li>
+            </ul>
+          </div>
+        </div>
+        <div class="ac-example" style="border-color:var(--delivery-b);">
+          <div class="ex-label">Weekly Update Brief</div>
+          <div class="ex-text"><strong>"n8n v1.48 update: new native WhatsApp Business node released. Update Week 2 demo — previous HTTP workaround now redundant. Recommend: replace in next batch. ETA: 2 hours to update."</strong></div>
+        </div>
+        <div class="ac-benefit">
+          <div class="benefit-icon">🔄</div>
+          <div class="benefit-text">Students always learn the latest, production-grade methods. No other EdTech course in India does this systematically — a major differentiation.</div>
+        </div>
+        <div class="ac-tools">
+          <span class="tool-chip">n8n Web Scrape</span><span class="tool-chip">GitHub API</span><span class="tool-chip">Claude</span><span class="tool-chip">Notion Update</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 8 -->
+    <div class="agent-card rv d2">
+      <div class="ac-head" style="border-bottom:1px solid var(--border);">
+        <div class="ac-num" style="background:var(--delivery-l);color:var(--delivery);">8</div>
+        <div class="ac-info">
+          <div class="ac-label" style="color:var(--delivery);">Delivery Agent 08</div>
+          <div class="ac-name">Student Engagement Pulse Agent</div>
+        </div>
+      </div>
+      <div class="ac-body">
+        <div class="ac-what">Every Tuesday and Friday, this agent sends a 1-question micro-check-in to each student ("How confident are you feeling about this week's content — 1 to 5?"), aggregates responses, and flags cohort-level confusion patterns to the instructor before the next session.</div>
+        <div class="io-row">
+          <div class="io-box">
+            <div class="io-label" style="color:var(--delivery);">Input</div>
+            <ul class="io-items">
+              <li>Weekly topic being taught</li>
+              <li>Student WhatsApp numbers</li>
+              <li>Previous week's engagement score</li>
+            </ul>
+          </div>
+          <div class="io-box">
+            <div class="io-label" style="color:var(--delivery);">Output</div>
+            <ul class="io-items">
+              <li>Cohort confidence score (average)</li>
+              <li>Students below threshold (flagged)</li>
+              <li>"Reteach this concept" recommendation</li>
+              <li>Instructor action brief for next session</li>
+            </ul>
+          </div>
+        </div>
+        <div class="ac-example" style="border-color:var(--delivery-b);">
+          <div class="ex-label">Instructor Alert</div>
+          <div class="ex-text"><strong>"This week's cohort confidence: 6.2/10 on 'n8n Error Branches' topic. 7 out of 15 students rated below 5. Recommend: Open Saturday session with a 15-min live re-demo before moving forward."</strong></div>
+        </div>
+        <div class="ac-benefit">
+          <div class="benefit-icon">📡</div>
+          <div class="benefit-text">Instructors teach what students need — not what the curriculum says they "should" know by now. Prevents cohort-wide confusion from compounding week by week.</div>
+        </div>
+        <div class="ac-tools">
+          <span class="tool-chip">WhatsApp API</span><span class="tool-chip">n8n Scheduler</span><span class="tool-chip">Google Sheets</span><span class="tool-chip">Claude</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 9 -->
+    <div class="agent-card rv d1">
+      <div class="ac-head" style="border-bottom:1px solid var(--border);">
+        <div class="ac-num" style="background:var(--delivery-l);color:var(--delivery);">9</div>
+        <div class="ac-info">
+          <div class="ac-label" style="color:var(--delivery);">Delivery Agent 09</div>
+          <div class="ac-name">Client Project QC Review Agent</div>
+        </div>
+      </div>
+      <div class="ac-body">
+        <div class="ac-what">Before any student deliverable reaches the client, this agent runs a structured QC review — checking against the SRS acceptance criteria, testing edge cases, verifying documentation completeness, and generating a QC Report that the Lead Engineer signs off on. Nothing ships without this gate.</div>
+        <div class="io-row">
+          <div class="io-box">
+            <div class="io-label" style="color:var(--delivery);">Input</div>
+            <ul class="io-items">
+              <li>Student's deliverable files</li>
+              <li>SRS acceptance criteria checklist</li>
+              <li>Client brief / scope document</li>
+            </ul>
+          </div>
+          <div class="io-box">
+            <div class="io-label" style="color:var(--delivery);">Output</div>
+            <ul class="io-items">
+              <li>QC score (pass / revise / fail)</li>
+              <li>Criteria-by-criteria assessment</li>
+              <li>Specific issues to fix (numbered)</li>
+              <li>Lead Engineer sign-off prompt</li>
+            </ul>
+          </div>
+        </div>
+        <div class="ac-example" style="border-color:var(--delivery-b);">
+          <div class="ex-label">QC Report Example</div>
+          <div class="ex-text"><strong>"Status: REVISE. ✅ WhatsApp trigger works. ✅ CRM sync complete. ❌ Error branch missing for API timeout. ❌ No user-friendly fallback message. Fix these 2 items — estimated 45 mins — then resubmit."</strong></div>
+        </div>
+        <div class="ac-benefit">
+          <div class="benefit-icon">🔒</div>
+          <div class="benefit-text">Guarantees client-grade delivery quality without requiring the Lead Engineer to review every line manually. The agent does first-pass QC; human does final sign-off.</div>
+        </div>
+        <div class="ac-tools">
+          <span class="tool-chip">n8n</span><span class="tool-chip">Claude/GPT-4</span><span class="tool-chip">Notion Checklist</span><span class="tool-chip">Google Drive</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 10 -->
+    <div class="agent-card rv d2">
+      <div class="ac-head" style="border-bottom:1px solid var(--border);">
+        <div class="ac-num" style="background:var(--delivery-l);color:var(--delivery);">10</div>
+        <div class="ac-info">
+          <div class="ac-label" style="color:var(--delivery);">Delivery Agent 10</div>
+          <div class="ac-name">Learning Outcome Report Agent</div>
+        </div>
+      </div>
+      <div class="ac-body">
+        <div class="ac-what">At the end of every batch, this agent auto-generates a comprehensive Learning Outcome Report — showing aggregate skills mastered, project completion rates, income earned by students, and outcome improvements versus previous batch. Used for AICTE reporting, institutional sales, and continuous curriculum improvement.</div>
+        <div class="io-row">
+          <div class="io-box">
+            <div class="io-label" style="color:var(--delivery);">Input</div>
+            <ul class="io-items">
+              <li>Full batch LMS and CRM data</li>
+              <li>Student project earnings records</li>
+              <li>AICTE reporting template</li>
+            </ul>
+          </div>
+          <div class="io-box">
+            <div class="io-label" style="color:var(--delivery);">Output</div>
+            <ul class="io-items">
+              <li>Batch completion rate</li>
+              <li>Average income earned per student</li>
+              <li>Top 3 skills demonstrated at scale</li>
+              <li>Curriculum improvement recommendations</li>
+              <li>AICTE-format outcome document</li>
+            </ul>
+          </div>
+        </div>
+        <div class="ac-example" style="border-color:var(--delivery-b);">
+          <div class="ex-label">Batch Summary Insight</div>
+          <div class="ex-text"><strong>"Batch 3 outcomes: 13/15 students completed (87%). Average earnings: ₹18,400. Highest earner: ₹44,000. Completion rate up 12% vs Batch 2. Top skill: WhatsApp automation."</strong></div>
+        </div>
+        <div class="ac-benefit">
+          <div class="benefit-icon">📄</div>
+          <div class="benefit-text">Transforms every batch into a marketing asset. Every college partner, institutional buyer, and AICTE auditor gets data — not stories. Credibility compounds with every batch.</div>
+        </div>
+        <div class="ac-tools">
+          <span class="tool-chip">LMS + CRM API</span><span class="tool-chip">n8n</span><span class="tool-chip">Claude</span><span class="tool-chip">Google Docs</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="start-strip rv d3" style="border-color:var(--delivery-b);">
+    <div class="ss-title" style="color:var(--delivery);">🔥 Best 3 Delivery Agents to Build First</div>
+    <div class="ss-items">
+      <div class="ss-item"><span class="ss-rank" style="color:var(--delivery);">1️⃣</span><span><strong style="color:var(--text);">Student Dropout Prediction Agent</strong> — protects your completion rate and your guarantee</span></div>
+      <div class="ss-item"><span class="ss-rank" style="color:var(--delivery);">2️⃣</span><span><strong style="color:var(--text);">AI Doubt Resolution Agent</strong> — most felt student pain, biggest instructor relief</span></div>
+      <div class="ss-item"><span class="ss-rank" style="color:var(--delivery);">3️⃣</span><span><strong style="color:var(--text);">Client Project QC Review Agent</strong> — protects client reputation, the foundation of your agency</span></div>
+    </div>
+  </div>
+
+</div>
+</section>
+
+<div class="dv"></div>
+
+<!-- ════════════════════════════════════════
+     HR AGENTS
+════════════════════════════════════════ -->
+<section id="s-hr">
+<div class="wrap">
+
+  <div class="dept-header rv">
+    <div class="dept-icon" style="background:var(--hr-l);border-color:var(--hr-b);">👥</div>
+    <div class="dept-meta">
+      <div class="dept-eyebrow" style="color:var(--hr);">Department 4 of 5</div>
+      <div class="dept-title">HR Process Agents</div>
+      <div class="dept-desc">Build the team that builds India's AI talent. These agents automate instructor recruitment, screen candidates at scale, onboard new hires, monitor team health, and ensure your culture of Love, Serve, Care is sustained as you scale from 5 to 50 people.</div>
+    </div>
+  </div>
+
+  <div class="agents-grid">
+
+    <!-- 1 -->
+    <div class="agent-card rv d1" style="border-color:var(--hr-b);">
+      <div class="ac-head" style="border-bottom:1px solid var(--border);">
+        <div class="ac-num" style="background:var(--hr-l);color:var(--hr);">1</div>
+        <div class="ac-info">
+          <div class="ac-label" style="color:var(--hr);">HR Agent 01</div>
+          <div class="ac-name">AI Instructor Recruitment Screener</div>
+        </div>
+      </div>
+      <div class="ac-body">
+        <div class="ac-what">When an instructor application arrives, this agent screens the resume and portfolio for 5 criteria specific to EdTech instruction — real project experience, ability to simplify complex topics, Indian student context familiarity, communication clarity, and tech stack alignment (n8n / CrewAI / Python).</div>
+        <div class="io-row">
+          <div class="io-box">
+            <div class="io-label" style="color:var(--hr);">Input</div>
+            <ul class="io-items">
+              <li>Resume / LinkedIn profile</li>
+              <li>Portfolio / GitHub / demo links</li>
+              <li>Role-specific questionnaire</li>
+            </ul>
+          </div>
+          <div class="io-box">
+            <div class="io-label" style="color:var(--delivery);">Output</div>
+            <ul class="io-items">
+              <li>Fit score (0–100) with breakdown</li>
+              <li>Strengths and gaps analysis</li>
+              <li>Top 5 interview questions (customised)</li>
+              <li>Recommend: interview / hold / decline</li>
+            </ul>
+          </div>
+        </div>
+        <div class="ac-example" style="border-color:var(--hr-b);">
+          <div class="ex-label">Screening Report</div>
+          <div class="ex-text"><strong>"Fit Score: 78/100. ✅ 3 years n8n experience. ✅ Has taught at engineering college. ❌ No CrewAI exposure. ❌ Portfolio lacks student-facing demos. Recommend: Interview — strong base, trainable on CrewAI."</strong></div>
+        </div>
+        <div class="ac-benefit">
+          <div class="benefit-icon">⏱️</div>
+          <div class="benefit-text">Reduces screening time from 45 minutes per resume to under 2 minutes. Ensures you never miss a great fit because of resume-reading fatigue.</div>
+        </div>
+        <div class="ac-tools">
+          <span class="tool-chip">n8n Email Trigger</span><span class="tool-chip">Claude</span><span class="tool-chip">PDF Parser</span><span class="tool-chip">Notion Tracker</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2 -->
+    <div class="agent-card rv d2">
+      <div class="ac-head" style="border-bottom:1px solid var(--border);">
+        <div class="ac-num" style="background:var(--hr-l);color:var(--hr);">2</div>
+        <div class="ac-info">
+          <div class="ac-label" style="color:var(--hr);">HR Agent 02</div>
+          <div class="ac-name">Culture Fit & Mission Alignment Evaluator</div>
+        </div>
+      </div>
+      <div class="ac-body">
+        <div class="ac-what">Before any hire is finalized, this agent analyzes responses to 5 culture-fit questions against Bharat Unnati's Love, Serve, Care framework and Jon Gordon's principles — identifying whether the candidate is motivated by mission or just money, and whether their working style aligns with your operational culture.</div>
+        <div class="io-row">
+          <div class="io-box">
+            <div class="io-label" style="color:var(--hr);">Input</div>
+            <ul class="io-items">
+              <li>Written interview responses</li>
+              <li>Role applied for</li>
+              <li>Culture framework criteria</li>
+            </ul>
+          </div>
+          <div class="io-box">
+            <div class="io-label" style="color:var(--delivery);">Output</div>
+            <ul class="io-items">
+              <li>Culture alignment score (0–10)</li>
+              <li>Mission vs. money motivation signal</li>
+              <li>Red flag phrases identified</li>
+              <li>Green flag phrases highlighted</li>
+              <li>Hire / conditional hire / decline</li>
+            </ul>
+          </div>
+        </div>
+        <div class="ac-example" style="border-color:var(--hr-b);">
+          <div class="ex-label">Culture Insight</div>
+          <div class="ex-text"><strong>"Green flag: 'I measure success when students get results, not when I finish my session.' Red flag: No mention of student wellbeing in any response. Conditional hire — explore values further in round 2."</strong></div>
+        </div>
+        <div class="ac-benefit">
+          <div class="benefit-icon">❤️</div>
+          <div class="benefit-text">A technically brilliant but mission-misaligned instructor destroys student culture in weeks. This agent protects your most valuable asset: the learning environment.</div>
+        </div>
+        <div class="ac-tools">
+          <span class="tool-chip">Google Form</span><span class="tool-chip">n8n</span><span class="tool-chip">Claude</span><span class="tool-chip">Notion</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3 -->
+    <div class="agent-card rv d1">
+      <div class="ac-head" style="border-bottom:1px solid var(--border);">
+        <div class="ac-num" style="background:var(--hr-l);color:var(--hr);">3</div>
+        <div class="ac-info">
+          <div class="ac-label" style="color:var(--hr);">HR Agent 03</div>
+          <div class="ac-name">New Hire Onboarding Automation Agent</div>
+        </div>
+      </div>
+      <div class="ac-body">
+        <div class="ac-what">The moment a new hire is confirmed, this agent automatically kicks off a 7-day structured onboarding sequence — sending tool access instructions, welcome materials, first-week tasks, culture reading list, and scheduling their buddy pairing — without any manual HR effort.</div>
+        <div class="io-row">
+          <div class="io-box">
+            <div class="io-label" style="color:var(--hr);">Input</div>
+            <ul class="io-items">
+              <li>New hire name, role, start date</li>
+              <li>WhatsApp number + email</li>
+              <li>Department and reporting manager</li>
+            </ul>
+          </div>
+          <div class="io-box">
+            <div class="io-label" style="color:var(--delivery);">Output</div>
+            <ul class="io-items">
+              <li>Day 1: Welcome + tool access sequence</li>
+              <li>Day 2: Culture reading + buddy intro</li>
+              <li>Day 3–5: Role-specific orientation tasks</li>
+              <li>Day 7: First-week check-in form sent</li>
+            </ul>
+          </div>
+        </div>
+        <div class="ac-example" style="border-color:var(--hr-b);">
+          <div class="ex-label">Day 1 Auto-Message</div>
+          <div class="ex-text"><strong>"Welcome to Bharat Unnati, Sneha! 🌟 Your Notion workspace access is below. Today's task: read our founding story (10 mins) and watch the 3 student success videos. Tomorrow you'll meet your buddy, Harish Sir."</strong></div>
+        </div>
+        <div class="ac-benefit">
+          <div class="benefit-icon">🎉</div>
+          <div class="benefit-text">First impressions are permanent. A structured, warm, automated onboarding sends the signal: "This is a serious organization that cares." Reduces early attrition by 50%.</div>
+        </div>
+        <div class="ac-tools">
+          <span class="tool-chip">n8n Trigger</span><span class="tool-chip">WhatsApp API</span><span class="tool-chip">Notion API</span><span class="tool-chip">Google Calendar</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4 -->
+    <div class="agent-card rv d2">
+      <div class="ac-head" style="border-bottom:1px solid var(--border);">
+        <div class="ac-num" style="background:var(--hr-l);color:var(--hr);">4</div>
+        <div class="ac-info">
+          <div class="ac-label" style="color:var(--hr);">HR Agent 04</div>
+          <div class="ac-name">Instructor Performance Monitor Agent</div>
+        </div>
+      </div>
+      <div class="ac-body">
+        <div class="ac-what">After every batch, this agent aggregates instructor performance data — student satisfaction scores, doubt resolution speed, session attendance rates, assignment feedback quality — and generates a structured instructor performance report with specific coaching recommendations, not just a rating.</div>
+        <div class="io-row">
+          <div class="io-box">
+            <div class="io-label" style="color:var(--hr);">Input</div>
+            <ul class="io-items">
+              <li>Student satisfaction survey data</li>
+              <li>Doubt resolution response times</li>
+              <li>Session delivery punctuality</li>
+              <li>Student completion rate for their batch</li>
+            </ul>
+          </div>
+          <div class="io-box">
+            <div class="io-label" style="color:var(--delivery);">Output</div>
+            <ul class="io-items">
+              <li>Instructor performance score (0–100)</li>
+              <li>Top 2 strengths (specific)</li>
+              <li>1–2 improvement areas (actionable)</li>
+              <li>Coaching plan for next batch</li>
+            </ul>
+          </div>
+        </div>
+        <div class="ac-example" style="border-color:var(--hr-b);">
+          <div class="ex-label">Performance Report Example</div>
+          <div class="ex-text"><strong>"Srinivas Sir — Score: 84/100. ✅ Students love real-world examples (avg 9.2/10). ✅ Punctuality excellent. ❌ Doubt response time: avg 6 hours (target: 2 hrs). Coaching: set 3 fixed WhatsApp response windows daily."</strong></div>
+        </div>
+        <div class="ac-benefit">
+          <div class="benefit-icon">🌱</div>
+          <div class="benefit-text">Instructors grow with specific feedback, not vague ratings. High performers are recognized. Struggling instructors are supported — not suddenly let go.</div>
+        </div>
+        <div class="ac-tools">
+          <span class="tool-chip">LMS Feedback API</span><span class="tool-chip">n8n</span><span class="tool-chip">Claude</span><span class="tool-chip">Google Sheets</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5 -->
+    <div class="agent-card rv d1">
+      <div class="ac-head" style="border-bottom:1px solid var(--border);">
+        <div class="ac-num" style="background:var(--hr-l);color:var(--hr);">5</div>
+        <div class="ac-info">
+          <div class="ac-label" style="color:var(--hr);">HR Agent 05</div>
+          <div class="ac-name">Team Mood & Burnout Detector</div>
+        </div>
+      </div>
+      <div class="ac-body">
+        <div class="ac-what">Every Friday, this agent sends a 3-question anonymous pulse check to all team members, analyzes sentiment patterns, flags any team member showing early burnout indicators (declining engagement, repeated late submissions, reduced initiative), and recommends a supportive action to the reporting manager — before the person resigns.</div>
+        <div class="io-row">
+          <div class="io-box">
+            <div class="io-label" style="color:var(--hr);">Input</div>
+            <ul class="io-items">
+              <li>Weekly anonymous 3-question pulse</li>
+              <li>Team workload data (tasks assigned)</li>
+              <li>Attendance and submission patterns</li>
+            </ul>
+          </div>
+          <div class="io-box">
+            <div class="io-label" style="color:var(--delivery);">Output</div>
+            <ul class="io-items">
+              <li>Team mood score (1–10)</li>
+              <li>Burnout risk flags per person</li>
+              <li>Specific check-in conversation prompt</li>
+              <li>Workload redistribution suggestion</li>
+            </ul>
+          </div>
+        </div>
+        <div class="ac-example" style="border-color:var(--hr-b);">
+          <div class="ex-label">Manager Alert</div>
+          <div class="ex-text"><strong>"Deepa (Delivery) — Burnout risk: MEDIUM. 2 weeks of declining pulse scores. Likely overloaded with 3 simultaneous batches. Suggested action: 1-on-1 coffee conversation this week. Consider redistributing 1 batch."</strong></div>
+        </div>
+        <div class="ac-benefit">
+          <div class="benefit-icon">💚</div>
+          <div class="benefit-text">Retaining a trained team member costs 10× less than replacing one. This agent makes "Love, Serve, Care" not just a poster value — but an operational system.</div>
+        </div>
+        <div class="ac-tools">
+          <span class="tool-chip">Google Form</span><span class="tool-chip">n8n Friday Scheduler</span><span class="tool-chip">Claude Sentiment</span><span class="tool-chip">WhatsApp</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6 -->
+    <div class="agent-card rv d2">
+      <div class="ac-head" style="border-bottom:1px solid var(--border);">
+        <div class="ac-num" style="background:var(--hr-l);color:var(--hr);">6</div>
+        <div class="ac-info">
+          <div class="ac-label" style="color:var(--hr);">HR Agent 06</div>
+          <div class="ac-name">Job Description Generator Agent</div>
+        </div>
+      </div>
+      <div class="ac-body">
+        <div class="ac-what">When a new role opens up, this agent generates a compelling, bias-reduced, India-context-appropriate job description — in English and Hindi — that attracts mission-driven candidates rather than just salary-seekers. Uses your culture pillars as the foundation, not a generic HR template.</div>
+        <div class="io-row">
+          <div class="io-box">
+            <div class="io-label" style="color:var(--hr);">Input</div>
+            <ul class="io-items">
+              <li>Role title and department</li>
+              <li>Key responsibilities (bullet points)</li>
+              <li>Must-have and nice-to-have skills</li>
+            </ul>
+          </div>
+          <div class="io-box">
+            <div class="io-label" style="color:var(--delivery);">Output</div>
+            <ul class="io-items">
+              <li>Full JD (English) — LinkedIn format</li>
+              <li>Short JD (Hindi) — WhatsApp format</li>
+              <li>5 screening interview questions</li>
+              <li>Mission hook for the opening paragraph</li>
+            </ul>
+          </div>
+        </div>
+        <div class="ac-example" style="border-color:var(--hr-b);">
+          <div class="ex-label">Mission Hook Example</div>
+          <div class="ex-text"><strong>"We don't hire instructors. We invite educators who believe every Indian student deserves world-class AI training. If you've ever felt that what you teach matters beyond a salary — this role is yours."</strong></div>
+        </div>
+        <div class="ac-benefit">
+          <div class="benefit-icon">✍️</div>
+          <div class="benefit-text">Mission-aligned JDs attract mission-aligned candidates. The right opening sentence filters better than 10 interview rounds.</div>
+        </div>
+        <div class="ac-tools">
+          <span class="tool-chip">Claude</span><span class="tool-chip">n8n</span><span class="tool-chip">Notion Template</span><span class="tool-chip">LinkedIn API</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7 -->
+    <div class="agent-card rv d1">
+      <div class="ac-head" style="border-bottom:1px solid var(--border);">
+        <div class="ac-num" style="background:var(--hr-l);color:var(--hr);">7</div>
+        <div class="ac-info">
+          <div class="ac-label" style="color:var(--hr);">HR Agent 07</div>
+          <div class="ac-name">Leave & Workload Balancing Agent</div>
+        </div>
+      </div>
+      <div class="ac-body">
+        <div class="ac-what">When a team member applies for leave, this agent checks the batch calendar, active client projects, and other team members' availability, then generates a leave impact assessment and automatically suggests a coverage plan — so no student session is cancelled and no project delayed due to a leave.</div>
+        <div class="io-row">
+          <div class="io-box">
+            <div class="io-label" style="color:var(--hr);">Input</div>
+            <ul class="io-items">
+              <li>Leave request (dates, person)</li>
+              <li>Active batch calendar</li>
+              <li>Active client project status</li>
+              <li>Team availability data</li>
+            </ul>
+          </div>
+          <div class="io-box">
+            <div class="io-label" style="color:var(--delivery);">Output</div>
+            <ul class="io-items">
+              <li>Leave impact score (low / medium / high)</li>
+              <li>Coverage person recommended</li>
+              <li>Sessions/projects needing handoff</li>
+              <li>Handoff briefing document auto-drafted</li>
+            </ul>
+          </div>
+        </div>
+        <div class="ac-example" style="border-color:var(--hr-b);">
+          <div class="ex-label">Leave Impact Assessment</div>
+          <div class="ex-text"><strong>"Ravi's 3-day leave: MEDIUM impact. 1 session affected (Tuesday, Batch 4). Coverage: Priya available. Auto-drafted handoff note sent to both. No client project impact. Approved."</strong></div>
+        </div>
+        <div class="ac-benefit">
+          <div class="benefit-icon">📅</div>
+          <div class="benefit-text">Zero student experience degradation during team leave. Coverage is planned in minutes, not hours. Teams can take leave without guilt.</div>
+        </div>
+        <div class="ac-tools">
+          <span class="tool-chip">Google Calendar</span><span class="tool-chip">n8n</span><span class="tool-chip">Claude</span><span class="tool-chip">Notion</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 8 -->
+    <div class="agent-card rv d2">
+      <div class="ac-head" style="border-bottom:1px solid var(--border);">
+        <div class="ac-num" style="background:var(--hr-l);color:var(--hr);">8</div>
+        <div class="ac-info">
+          <div class="ac-label" style="color:var(--hr);">HR Agent 08</div>
+          <div class="ac-name">Team Recognition & Celebration Agent</div>
+        </div>
+      </div>
+      <div class="ac-body">
+        <div class="ac-what">Every week, this agent scans all team performance data, identifies 1–3 specific achievements worth celebrating (a student completion milestone, a project delivered on time, a counsellor's best conversion week), and generates a personalized recognition message for the team WhatsApp group — making recognition systematic, not accidental.</div>
+        <div class="io-row">
+          <div class="io-box">
+            <div class="io-label" style="color:var(--hr);">Input</div>
+            <ul class="io-items">
+              <li>This week's team performance data</li>
+              <li>Project deliveries completed</li>
+              <li>Student outcome milestones</li>
+            </ul>
+          </div>
+          <div class="io-box">
+            <div class="io-label" style="color:var(--delivery);">Output</div>
+            <ul class="io-items">
+              <li>1–3 recognition moments identified</li>
+              <li>Personalized celebration message</li>
+              <li>Specific achievement highlighted (not generic praise)</li>
+            </ul>
+          </div>
+        </div>
+        <div class="ac-example" style="border-color:var(--hr-b);">
+          <div class="ex-label">Team WhatsApp Recognition</div>
+          <div class="ex-text"><strong>"🏆 This week's spotlight: Kavya (Delivery) — her Dropout Intervention for Suresh resulted in his highest quiz score this term. That's the Love, Serve, Care in action. Well done Kavya! 🙌"</strong></div>
+        </div>
+        <div class="ac-benefit">
+          <div class="benefit-icon">🌟</div>
+          <div class="benefit-text">Teams that feel seen perform better and stay longer. Jon Gordon's philosophy says: celebrate wins loudly. This agent makes that a system, not a memory.</div>
+        </div>
+        <div class="ac-tools">
+          <span class="tool-chip">CRM + LMS Data</span><span class="tool-chip">n8n Weekly Trigger</span><span class="tool-chip">Claude</span><span class="tool-chip">WhatsApp Group</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 9 -->
+    <div class="agent-card rv d1">
+      <div class="ac-head" style="border-bottom:1px solid var(--border);">
+        <div class="ac-num" style="background:var(--hr-l);color:var(--hr);">9</div>
+        <div class="ac-info">
+          <div class="ac-label" style="color:var(--hr);">HR Agent 09</div>
+          <div class="ac-name">Freelance Trainer Network Manager</div>
+        </div>
+      </div>
+      <div class="ac-body">
+        <div class="ac-what">As you scale to 100+ colleges, you need a network of freelance subject-matter trainers. This agent maintains the trainer database, auto-matches available trainers to new batch requirements based on skills and geography, sends engagement requests, tracks confirmations, and manages the trainer payment tracking cycle.</div>
+        <div class="io-row">
+          <div class="io-box">
+            <div class="io-label" style="color:var(--hr);">Input</div>
+            <ul class="io-items">
+              <li>New batch requirements (topic, city, date)</li>
+              <li>Trainer database (skills, location, rates)</li>
+              <li>Past training performance scores</li>
+            </ul>
+          </div>
+          <div class="io-box">
+            <div class="io-label" style="color:var(--delivery);">Output</div>
+            <ul class="io-items">
+              <li>Top 3 trainer matches (ranked)</li>
+              <li>Engagement request auto-sent</li>
+              <li>Confirmation tracked and logged</li>
+              <li>Payment trigger after delivery</li>
+            </ul>
+          </div>
+        </div>
+        <div class="ac-example" style="border-color:var(--hr-b);">
+          <div class="ex-label">Trainer Match Output</div>
+          <div class="ex-text"><strong>"Batch: n8n Advanced, Hubli, March 15. Best match: Suresh P. (4.8/5 rating, Hubli-based, available, rate: ₹4,500/session). Engagement request sent automatically. Awaiting confirmation."</strong></div>
+        </div>
+        <div class="ac-benefit">
+          <div class="benefit-icon">🌐</div>
+          <div class="benefit-text">Scale training delivery across 100+ colleges without a proportional headcount increase. The trainer network becomes a scalable asset, not a coordination nightmare.</div>
+        </div>
+        <div class="ac-tools">
+          <span class="tool-chip">Airtable/Notion DB</span><span class="tool-chip">n8n</span><span class="tool-chip">WhatsApp API</span><span class="tool-chip">Razorpay</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 10 -->
+    <div class="agent-card rv d2">
+      <div class="ac-head" style="border-bottom:1px solid var(--border);">
+        <div class="ac-num" style="background:var(--hr-l);color:var(--hr);">10</div>
+        <div class="ac-info">
+          <div class="ac-label" style="color:var(--hr);">HR Agent 10</div>
+          <div class="ac-name">Policy & Compliance Document Agent</div>
+        </div>
+      </div>
+      <div class="ac-body">
+        <div class="ac-what">Maintains all HR policies (leave policy, code of conduct, payment terms, trainer agreements) in a searchable format. When a team member asks a policy question on WhatsApp, the agent instantly retrieves the relevant section, explains it in plain language, and flags the HR manager only if the question is outside policy scope.</div>
+        <div class="io-row">
+          <div class="io-box">
+            <div class="io-label" style="color:var(--hr);">Input</div>
+            <ul class="io-items">
+              <li>Policy question (natural language)</li>
+              <li>Team member role and tenure</li>
+              <li>All HR policy documents (RAG)</li>
+            </ul>
+          </div>
+          <div class="io-box">
+            <div class="io-label" style="color:var(--delivery);">Output</div>
+            <ul class="io-items">
+              <li>Direct policy answer (plain language)</li>
+              <li>Relevant policy section cited</li>
+              <li>Follow-up action if required</li>
+              <li>HR escalation if policy doesn't cover it</li>
+            </ul>
+          </div>
+        </div>
+        <div class="ac-example" style="border-color:var(--hr-b);">
+          <div class="ex-label">Q&A Example</div>
+          <div class="ex-text"><strong>Q: "How many casual leaves do I have?"<br>A: "As per Policy Section 3.2: Full-time team members get 12 casual leaves per year (1/month). You've used 4, so 8 remain. Leave form is in Notion → HR → Leave Requests."</strong></div>
+        </div>
+        <div class="ac-benefit">
+          <div class="benefit-icon">📚</div>
+          <div class="benefit-text">Frees the HR function from repetitive policy queries. Team members get instant, accurate answers at 11pm — without waiting for Monday morning.</div>
+        </div>
+        <div class="ac-tools">
+          <span class="tool-chip">RAG on HR Docs</span><span class="tool-chip">WhatsApp Bot</span><span class="tool-chip">Claude</span><span class="tool-chip">Notion</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="start-strip rv d3" style="border-color:var(--hr-b);">
+    <div class="ss-title" style="color:var(--hr);">🔥 Best 3 HR Agents to Build First</div>
+    <div class="ss-items">
+      <div class="ss-item"><span class="ss-rank" style="color:var(--hr);">1️⃣</span><span><strong style="color:var(--text);">New Hire Onboarding Automation Agent</strong> — immediate impact, sets culture from Day 1</span></div>
+      <div class="ss-item"><span class="ss-rank" style="color:var(--hr);">2️⃣</span><span><strong style="color:var(--text);">Instructor Performance Monitor Agent</strong> — protects student experience as you scale</span></div>
+      <div class="ss-item"><span class="ss-rank" style="color:var(--hr);">3️⃣</span><span><strong style="color:var(--text);">Team Mood & Burnout Detector</strong> — Love, Serve, Care must be a system, not a slogan</span></div>
+    </div>
+  </div>
+
+</div>
+</section>
+
+<div class="dv"></div>
+
+<!-- ════════════════════════════════════════
+     FINANCE AGENTS
+════════════════════════════════════════ -->
+<section id="s-finance">
+<div class="wrap">
+
+  <div class="dept-header rv">
+    <div class="dept-icon" style="background:var(--finance-l);border-color:var(--finance-b);">💰</div>
+    <div class="dept-meta">
+      <div class="dept-eyebrow" style="color:var(--finance);">Department 5 of 5</div>
+      <div class="dept-title">Finance Process Agents</div>
+      <div class="dept-desc">Run a financially healthy EdTech business without a full finance team. These agents automate fee collection, EMI tracking, revenue forecasting, expense approvals, GST compliance, and real-time financial health monitoring — so every rupee is accounted for as you scale to ₹200 Crore.</div>
+    </div>
+  </div>
+
+  <div class="agents-grid">
+
+    <!-- 1 -->
+    <div class="agent-card rv d1" style="border-color:var(--finance-b);">
+      <div class="ac-head" style="border-bottom:1px solid var(--border);">
+        <div class="ac-num" style="background:var(--finance-l);color:var(--finance);">1</div>
+        <div class="ac-info">
+          <div class="ac-label" style="color:var(--finance);">Finance Agent 01</div>
+          <div class="ac-name">Fee Collection & EMI Reminder Agent</div>
+        </div>
+      </div>
+      <div class="ac-body">
+        <div class="ac-what">Monitors all student payment schedules, sends empathetic but firm reminders 3 days before EMI due dates, escalates to human follow-up for payments overdue by 7+ days, and auto-generates payment links via Razorpay — reducing fee collection friction for both student and admin team.</div>
+        <div class="io-row">
+          <div class="io-box">
+            <div class="io-label" style="color:var(--finance);">Input</div>
+            <ul class="io-items">
+              <li>Student payment schedule DB</li>
+              <li>Razorpay transaction feed</li>
+              <li>Today's date (auto-trigger)</li>
+            </ul>
+          </div>
+          <div class="io-box">
+            <div class="io-label" style="color:var(--delivery);">Output</div>
+            <ul class="io-items">
+              <li>Personalized reminder message</li>
+              <li>Razorpay payment link (auto-generated)</li>
+              <li>Overdue alerts to finance manager</li>
+              <li>Collections dashboard update</li>
+            </ul>
+          </div>
+        </div>
+        <div class="ac-example" style="border-color:var(--finance-b);">
+          <div class="ex-label">Reminder Message (WhatsApp)</div>
+          <div class="ex-text"><strong>"Hi Akash! Your second EMI of ₹12,000 is due in 3 days (March 30). You're doing great in the program — keep the momentum going! Pay here: [Razorpay Link]. Any difficulty, reply here directly."</strong></div>
+        </div>
+        <div class="ac-benefit">
+          <div class="benefit-icon">💳</div>
+          <div class="benefit-text">Reduces overdue EMIs by 60–70%. Warm, personalized reminders collect faster than cold payment demands. Cash flow becomes predictable.</div>
+        </div>
+        <div class="ac-tools">
+          <span class="tool-chip">Razorpay API</span><span class="tool-chip">n8n Scheduler</span><span class="tool-chip">WhatsApp API</span><span class="tool-chip">Google Sheets</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2 -->
+    <div class="agent-card rv d2">
+      <div class="ac-head" style="border-bottom:1px solid var(--border);">
+        <div class="ac-num" style="background:var(--finance-l);color:var(--finance);">2</div>
+        <div class="ac-info">
+          <div class="ac-label" style="color:var(--finance);">Finance Agent 02</div>
+          <div class="ac-name">Revenue & Enrollment Forecasting Agent</div>
+        </div>
+      </div>
+      <div class="ac-body">
+        <div class="ac-what">Every Monday morning, this agent analyzes leads in pipeline, historical conversion rates, upcoming batch dates, and confirmed enrollments — then generates a 30/60/90-day revenue forecast, broken down by training revenue, agency project revenue, and institutional B2B revenue. Gives leadership a financial picture before the week begins.</div>
+        <div class="io-row">
+          <div class="io-box">
+            <div class="io-label" style="color:var(--finance);">Input</div>
+            <ul class="io-items">
+              <li>Current pipeline (all leads + stages)</li>
+              <li>Historical conversion rates</li>
+              <li>Confirmed enrollments + EMI schedule</li>
+              <li>Active agency projects</li>
+            </ul>
+          </div>
+          <div class="io-box">
+            <div class="io-label" style="color:var(--delivery);">Output</div>
+            <ul class="io-items">
+              <li>30-day revenue forecast (training)</li>
+              <li>30-day revenue forecast (agency)</li>
+              <li>Collection risk flag (unpaid EMIs)</li>
+              <li>Gap-to-target analysis (vs. monthly goal)</li>
+            </ul>
+          </div>
+        </div>
+        <div class="ac-example" style="border-color:var(--finance-b);">
+          <div class="ex-label">Monday Morning Financial Brief</div>
+          <div class="ex-text"><strong>"Week 12 Forecast: Training ₹4.2L (confirmed) + ₹1.8L (pipeline, 40% confidence). Agency: ₹1.1L (2 projects closing). Gap to ₹10L target: ₹2.9L. Priority: 8 warm leads need closure call this week."</strong></div>
+        </div>
+        <div class="ac-benefit">
+          <div class="benefit-icon">🔭</div>
+          <div class="benefit-text">Leaders stop managing with rear-view mirrors. Proactive financial visibility means you correct course 3 weeks early — not after the month closes in the red.</div>
+        </div>
+        <div class="ac-tools">
+          <span class="tool-chip">CRM API</span><span class="tool-chip">Razorpay</span><span class="tool-chip">n8n Monday Scheduler</span><span class="tool-chip">Claude</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3 -->
+    <div class="agent-card rv d1">
+      <div class="ac-head" style="border-bottom:1px solid var(--border);">
+        <div class="ac-num" style="background:var(--finance-l);color:var(--finance);">3</div>
+        <div class="ac-info">
+          <div class="ac-label" style="color:var(--finance);">Finance Agent 03</div>
+          <div class="ac-name">Student Revenue Split Calculator & Payout Agent</div>
+        </div>
+      </div>
+      <div class="ac-body">
+        <div class="ac-what">When a client project payment is received via Razorpay, this agent automatically calculates the 60/40 revenue split, generates the student payment advice document, logs the transaction in the master ledger, and triggers the student's payout — completing the entire cycle without manual intervention.</div>
+        <div class="io-row">
+          <div class="io-box">
+            <div class="io-label" style="color:var(--finance);">Input</div>
+            <ul class="io-items">
+              <li>Razorpay payment confirmation</li>
+              <li>Project ID and assigned student(s)</li>
+              <li>Student tier (determines split %)</li>
+            </ul>
+          </div>
+          <div class="io-box">
+            <div class="io-label" style="color:var(--delivery);">Output</div>
+            <ul class="io-items">
+              <li>Bharat Unnati share calculated (60%)</li>
+              <li>Student share calculated (40%)</li>
+              <li>Payment advice sent to student</li>
+              <li>Bank transfer trigger to student account</li>
+              <li>Ledger entry auto-created</li>
+            </ul>
+          </div>
+        </div>
+        <div class="ac-example" style="border-color:var(--finance-b);">
+          <div class="ex-label">Student Payout Notification</div>
+          <div class="ex-text"><strong>"🎉 Congrats Meera! Client payment of ₹50,000 received for your WhatsApp Chatbot project. Your 40% share: ₹20,000 will be transferred to your bank account within 2 business days. You earned it! 🚀"</strong></div>
+        </div>
+        <div class="ac-benefit">
+          <div class="benefit-icon">⚡</div>
+          <div class="benefit-text">Students receive income automatically, transparently, and on time — no chasing required. Trust in the program is directly proportional to payout speed and clarity.</div>
+        </div>
+        <div class="ac-tools">
+          <span class="tool-chip">Razorpay Webhook</span><span class="tool-chip">n8n</span><span class="tool-chip">Bank API / RazorpayX</span><span class="tool-chip">Google Sheets</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4 -->
+    <div class="agent-card rv d2">
+      <div class="ac-head" style="border-bottom:1px solid var(--border);">
+        <div class="ac-num" style="background:var(--finance-l);color:var(--finance);">4</div>
+        <div class="ac-info">
+          <div class="ac-label" style="color:var(--finance);">Finance Agent 04</div>
+          <div class="ac-name">GST Invoice Auto-Generator</div>
+        </div>
+      </div>
+      <div class="ac-body">
+        <div class="ac-what">Every time a student enrolls or a client project is invoiced, this agent auto-generates a GST-compliant invoice in PDF format — with the correct SAC code (educational services for training, IT services for agency projects), GSTIN details, and payment terms — and emails it to the customer within 60 seconds.</div>
+        <div class="io-row">
+          <div class="io-box">
+            <div class="io-label" style="color:var(--finance);">Input</div>
+            <ul class="io-items">
+              <li>Student/client name and address</li>
+              <li>Invoice type (training / agency)</li>
+              <li>Amount and payment mode</li>
+              <li>GSTIN (if B2B client)</li>
+            </ul>
+          </div>
+          <div class="io-box">
+            <div class="io-label" style="color:var(--delivery);">Output</div>
+            <ul class="io-items">
+              <li>GST-compliant PDF invoice</li>
+              <li>Correct SAC code applied</li>
+              <li>Email to student/client (auto)</li>
+              <li>Accounts ledger entry created</li>
+            </ul>
+          </div>
+        </div>
+        <div class="ac-example" style="border-color:var(--finance-b);">
+          <div class="ex-label">Invoice Auto-Detail</div>
+          <div class="ex-text"><strong>Training invoice: SAC 999292 (Other education services) · Agency invoice: SAC 998313 (IT design and development). Both generated, emailed, and logged in under 60 seconds of payment confirmation.</strong></div>
+        </div>
+        <div class="ac-benefit">
+          <div class="benefit-icon">📑</div>
+          <div class="benefit-text">Zero GST compliance gaps as you scale. Eliminates the end-of-quarter scramble to generate 200 invoices manually. CA audit becomes effortless.</div>
+        </div>
+        <div class="ac-tools">
+          <span class="tool-chip">Razorpay Webhook</span><span class="tool-chip">n8n</span><span class="tool-chip">PDF Generation (pdfkit)</span><span class="tool-chip">Gmail API</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5 -->
+    <div class="agent-card rv d1">
+      <div class="ac-head" style="border-bottom:1px solid var(--border);">
+        <div class="ac-num" style="background:var(--finance-l);color:var(--finance);">5</div>
+        <div class="ac-info">
+          <div class="ac-label" style="color:var(--finance);">Finance Agent 05</div>
+          <div class="ac-name">Expense Categorization & Approval Agent</div>
+        </div>
+      </div>
+      <div class="ac-body">
+        <div class="ac-what">Team members submit expense claims via a simple WhatsApp photo of the receipt. This agent extracts the amount, vendor, and category using OCR + AI, categorizes it to the correct P&L line, checks against budget limits, and either auto-approves (under threshold) or routes to the approving manager — with context pre-filled.</div>
+        <div class="io-row">
+          <div class="io-box">
+            <div class="io-label" style="color:var(--finance);">Input</div>
+            <ul class="io-items">
+              <li>Receipt photo (WhatsApp)</li>
+              <li>Team member name and role</li>
+              <li>Department budget limits</li>
+            </ul>
+          </div>
+          <div class="io-box">
+            <div class="io-label" style="color:var(--delivery);">Output</div>
+            <ul class="io-items">
+              <li>Extracted: amount, vendor, date</li>
+              <li>Category: marketing / delivery / HR / ops</li>
+              <li>Auto-approved or routed for approval</li>
+              <li>P&L entry auto-updated</li>
+            </ul>
+          </div>
+        </div>
+        <div class="ac-example" style="border-color:var(--finance-b);">
+          <div class="ex-label">Auto-Categorized Entry</div>
+          <div class="ex-text"><strong>"Receipt: Zomato ₹850 · Category: Team Meal (HR) · Date: March 22 · Status: Auto-approved (under ₹1,000 threshold) · P&L updated. Harish Sir notified via summary."</strong></div>
+        </div>
+        <div class="ac-benefit">
+          <div class="benefit-icon">🧾</div>
+          <div class="benefit-text">Eliminates end-of-month expense submission chaos. P&L is updated in real time. Finance team focuses on analysis, not data entry.</div>
+        </div>
+        <div class="ac-tools">
+          <span class="tool-chip">WhatsApp API</span><span class="tool-chip">n8n + OCR</span><span class="tool-chip">Claude Vision</span><span class="tool-chip">Google Sheets</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6 -->
+    <div class="agent-card rv d2">
+      <div class="ac-head" style="border-bottom:1px solid var(--border);">
+        <div class="ac-num" style="background:var(--finance-l);color:var(--finance);">6</div>
+        <div class="ac-info">
+          <div class="ac-label" style="color:var(--finance);">Finance Agent 06</div>
+          <div class="ac-name">Scholarship & Fee Waiver Evaluator Agent</div>
+        </div>
+      </div>
+      <div class="ac-body">
+        <div class="ac-what">When a student requests a scholarship or fee reduction, this agent evaluates the request against defined criteria (family income, academic background, motivation letter quality, geographic tier) — generating a scored recommendation for the scholarship committee with a suggested support level. Removes subjectivity from scholarship decisions.</div>
+        <div class="io-row">
+          <div class="io-box">
+            <div class="io-label" style="color:var(--finance);">Input</div>
+            <ul class="io-items">
+              <li>Scholarship application form</li>
+              <li>Motivation letter</li>
+              <li>Academic background / income proof</li>
+              <li>Current scholarship budget available</li>
+            </ul>
+          </div>
+          <div class="io-box">
+            <div class="io-label" style="color:var(--delivery);">Output</div>
+            <ul class="io-items">
+              <li>Eligibility score (0–100)</li>
+              <li>Recommended support level (% waiver)</li>
+              <li>Key factors for / against</li>
+              <li>Budget impact on current pool</li>
+            </ul>
+          </div>
+        </div>
+        <div class="ac-example" style="border-color:var(--finance-b);">
+          <div class="ex-label">Scholarship Recommendation</div>
+          <div class="ex-text"><strong>"Priya Rao — Score: 72/100. Recommend: 20% fee waiver (₹7,000). Strong motivation letter. Tier 3 city (Gulbarga). Family income below ₹4L/year. Budget remaining: ₹21,000 of ₹35,000 scholarship pool."</strong></div>
+        </div>
+        <div class="ac-benefit">
+          <div class="benefit-icon">🎓</div>
+          <div class="benefit-text">Makes your scholarship program fair, data-driven, and consistent. Every deserving student is evaluated equally — removing bias and guesswork from one of the most important decisions.</div>
+        </div>
+        <div class="ac-tools">
+          <span class="tool-chip">Google Form</span><span class="tool-chip">n8n</span><span class="tool-chip">Claude</span><span class="tool-chip">Scholarship Budget Sheet</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7 -->
+    <div class="agent-card rv d1">
+      <div class="ac-head" style="border-bottom:1px solid var(--border);">
+        <div class="ac-num" style="background:var(--finance-l);color:var(--finance);">7</div>
+        <div class="ac-info">
+          <div class="ac-label" style="color:var(--finance);">Finance Agent 07</div>
+          <div class="ac-name">Refund Request Evaluation Agent</div>
+        </div>
+      </div>
+      <div class="ac-body">
+        <div class="ac-what">When a student submits a refund request, this agent evaluates it against the refund policy (before Week 2 = full refund, after Week 4 = no refund, between = partial), cross-checks attendance and engagement data, and generates a refund recommendation with reasoning — so the decision is policy-consistent and defensible, not emotional.</div>
+        <div class="io-row">
+          <div class="io-box">
+            <div class="io-label" style="color:var(--finance);">Input</div>
+            <ul class="io-items">
+              <li>Refund request (date, reason)</li>
+              <li>Enrollment date + week number</li>
+              <li>Student attendance and engagement data</li>
+              <li>Refund policy document</li>
+            </ul>
+          </div>
+          <div class="io-box">
+            <div class="io-label" style="color:var(--delivery);">Output</div>
+            <ul class="io-items">
+              <li>Refund eligibility (full / partial / none)</li>
+              <li>Policy clause cited</li>
+              <li>Recommended response message to student</li>
+              <li>Finance team action required</li>
+            </ul>
+          </div>
+        </div>
+        <div class="ac-example" style="border-color:var(--finance-b);">
+          <div class="ex-label">Evaluation Output</div>
+          <div class="ex-text"><strong>"Student in Week 5. Policy: after Week 4, no refund applicable. Attendance: 80% (good faith shown). Recommendation: no refund — but offer 1 batch deferral as goodwill. Response message drafted."</strong></div>
+        </div>
+        <div class="ac-benefit">
+          <div class="benefit-icon">⚖️</div>
+          <div class="benefit-text">Eliminates emotion-driven refund decisions. Every student gets a fair, policy-consistent response. Goodwill solutions preserve brand reputation while protecting revenue.</div>
+        </div>
+        <div class="ac-tools">
+          <span class="tool-chip">LMS Attendance Data</span><span class="tool-chip">n8n</span><span class="tool-chip">Claude</span><span class="tool-chip">RAG on Refund Policy</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 8 -->
+    <div class="agent-card rv d2">
+      <div class="ac-head" style="border-bottom:1px solid var(--border);">
+        <div class="ac-num" style="background:var(--finance-l);color:var(--finance);">8</div>
+        <div class="ac-info">
+          <div class="ac-label" style="color:var(--finance);">Finance Agent 08</div>
+          <div class="ac-name">Monthly P&L Summary Agent</div>
+        </div>
+      </div>
+      <div class="ac-body">
+        <div class="ac-what">On the 1st of every month, this agent consolidates all revenue streams (training fees, agency project income, institutional fees), all expense categories (salaries, tools, marketing, trainer fees), and generates a clean P&L summary — highlighting margin by revenue stream and flagging any expense line that grew disproportionately.</div>
+        <div class="io-row">
+          <div class="io-box">
+            <div class="io-label" style="color:var(--finance);">Input</div>
+            <ul class="io-items">
+              <li>Razorpay revenue transactions</li>
+              <li>Approved expense records</li>
+              <li>Salary and contractor payments</li>
+              <li>Previous month's P&L for comparison</li>
+            </ul>
+          </div>
+          <div class="io-box">
+            <div class="io-label" style="color:var(--delivery);">Output</div>
+            <ul class="io-items">
+              <li>Revenue by stream (₹ and %)</li>
+              <li>Expenses by category</li>
+              <li>Gross margin per revenue stream</li>
+              <li>MoM comparison + variance flags</li>
+              <li>CA-ready format PDF</li>
+            </ul>
+          </div>
+        </div>
+        <div class="ac-example" style="border-color:var(--finance-b);">
+          <div class="ex-label">Monthly P&L Insight</div>
+          <div class="ex-text"><strong>"March Revenue: ₹10.75L · Training: ₹8.05L (75%) · Agency: ₹2.7L (25%). Margin: 62%. ⚠ Flag: Marketing expenses up 34% MoM — review ad spend ROI. Net profit: ₹6.6L."</strong></div>
+        </div>
+        <div class="ac-benefit">
+          <div class="benefit-icon">📊</div>
+          <div class="benefit-text">Leadership has a financial picture on the 1st of every month without waiting for the CA. Decisions are made with current data, not 30-day-old reports.</div>
+        </div>
+        <div class="ac-tools">
+          <span class="tool-chip">Razorpay + Bank Data</span><span class="tool-chip">n8n 1st-of-month trigger</span><span class="tool-chip">Claude</span><span class="tool-chip">Google Sheets + PDF</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 9 -->
+    <div class="agent-card rv d1">
+      <div class="ac-head" style="border-bottom:1px solid var(--border);">
+        <div class="ac-num" style="background:var(--finance-l);color:var(--finance);">9</div>
+        <div class="ac-info">
+          <div class="ac-label" style="color:var(--finance);">Finance Agent 09</div>
+          <div class="ac-name">Client Payment Follow-Up Agent</div>
+        </div>
+      </div>
+      <div class="ac-body">
+        <div class="ac-what">When a client project is delivered and the invoice is raised, this agent monitors payment status, sends automated follow-ups at Day 3, Day 7, and Day 14 post-invoice — each escalating slightly in tone — and flags to the finance manager only when the 14-day mark passes without payment. Protects cash flow without straining client relationships.</div>
+        <div class="io-row">
+          <div class="io-box">
+            <div class="io-label" style="color:var(--finance);">Input</div>
+            <ul class="io-items">
+              <li>Invoice raised date + amount</li>
+              <li>Client contact details</li>
+              <li>Payment status (Razorpay)</li>
+              <li>Project delivery confirmation</li>
+            </ul>
+          </div>
+          <div class="io-box">
+            <div class="io-label" style="color:var(--delivery);">Output</div>
+            <ul class="io-items">
+              <li>Day 3: Friendly reminder + payment link</li>
+              <li>Day 7: Follow-up with invoice attached</li>
+              <li>Day 14: Escalation to finance manager</li>
+              <li>Payment received: auto-thank you sent</li>
+            </ul>
+          </div>
+        </div>
+        <div class="ac-example" style="border-color:var(--finance-b);">
+          <div class="ex-label">Day 7 Follow-Up Message</div>
+          <div class="ex-text"><strong>"Hi Rajan Sir, sharing the invoice for the WhatsApp chatbot project we delivered on March 20. Attaching it again for ease. Total: ₹50,000. Payment link: [Razorpay]. Let us know if you need any clarification. Thank you!"</strong></div>
+        </div>
+        <div class="ac-benefit">
+          <div class="benefit-icon">💸</div>
+          <div class="benefit-text">Reduces outstanding receivables aging. No more forgetting to follow up because the team was busy building the next project. Cash arrives faster.</div>
+        </div>
+        <div class="ac-tools">
+          <span class="tool-chip">Razorpay Invoice API</span><span class="tool-chip">n8n Scheduler</span><span class="tool-chip">WhatsApp/Email</span><span class="tool-chip">Claude</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 10 -->
+    <div class="agent-card rv d2">
+      <div class="ac-head" style="border-bottom:1px solid var(--border);">
+        <div class="ac-num" style="background:var(--finance-l);color:var(--finance);">10</div>
+        <div class="ac-info">
+          <div class="ac-label" style="color:var(--finance);">Finance Agent 10</div>
+          <div class="ac-name">North Star KPI Tracker Agent</div>
+        </div>
+      </div>
+      <div class="ac-body">
+        <div class="ac-what">Every Friday, this agent calculates Bharat Unnati's progress against its 2027 North Star goals (₹200Cr revenue, 25L learners), shows the weekly run rate, forecasts arrival at the goal, and identifies the top 3 business levers to accelerate toward the target. Keeps every decision connected to the mission.</div>
+        <div class="io-row">
+          <div class="io-box">
+            <div class="io-label" style="color:var(--finance);">Input</div>
+            <ul class="io-items">
+              <li>Weekly revenue (all streams)</li>
+              <li>New students enrolled (week)</li>
+              <li>Cumulative totals to date</li>
+              <li>2027 targets from North Star</li>
+            </ul>
+          </div>
+          <div class="io-box">
+            <div class="io-label" style="color:var(--delivery);">Output</div>
+            <ul class="io-items">
+              <li>% progress toward ₹200Cr target</li>
+              <li>% progress toward 25L learners</li>
+              <li>Weekly run rate + goal arrival forecast</li>
+              <li>Top 3 acceleration levers this week</li>
+            </ul>
+          </div>
+        </div>
+        <div class="ac-example" style="border-color:var(--finance-b);">
+          <div class="ex-label">Friday North Star Brief</div>
+          <div class="ex-text"><strong>"Week 12 Progress: Revenue ₹42.5L YTD (0.21% of ₹200Cr). Learners: 127 enrolled (0.05% of 25L target). At current run rate: ₹200Cr by 2031 — 4 years behind target. 🔴 Acceleration needed: scale institutional B2B faster."</strong></div>
+        </div>
+        <div class="ac-benefit">
+          <div class="benefit-icon">🌟</div>
+          <div class="benefit-text">Keeps every team member connected to the mission. Daily work feels bigger when everyone can see the progress and the gap. Mission-driven urgency without fear.</div>
+        </div>
+        <div class="ac-tools">
+          <span class="tool-chip">Revenue Dashboard</span><span class="tool-chip">LMS Enrollment Data</span><span class="tool-chip">n8n Friday Trigger</span><span class="tool-chip">Claude</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="start-strip rv d3" style="border-color:var(--finance-b);">
+    <div class="ss-title" style="color:var(--finance);">🔥 Best 3 Finance Agents to Build First</div>
+    <div class="ss-items">
+      <div class="ss-item"><span class="ss-rank" style="color:var(--finance);">1️⃣</span><span><strong style="color:var(--text);">Student Revenue Split Calculator & Payout Agent</strong> — core to the income guarantee program's trust</span></div>
+      <div class="ss-item"><span class="ss-rank" style="color:var(--finance);">2️⃣</span><span><strong style="color:var(--text);">Fee Collection & EMI Reminder Agent</strong> — directly improves cash flow, high ROI, easy to build</span></div>
+      <div class="ss-item"><span class="ss-rank" style="color:var(--finance);">3️⃣</span><span><strong style="color:var(--text);">Revenue & Enrollment Forecasting Agent</strong> — gives leadership visibility before problems arise</span></div>
+    </div>
+  </div>
+
+</div>
+</section>
+
+<!-- SUMMARY FOOTER -->
+<div style="background:var(--bg2);border-top:1px solid var(--border2);padding:40px 20px;text-align:center;">
+  <div class="wrap" style="max-width:680px;">
+    <div style="font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--mut);margin-bottom:14px;">The Complete EdTech AI Agent OS</div>
+    <div style="font-family:'Baloo 2',cursive;font-size:22px;font-weight:800;color:var(--text);margin-bottom:8px;">50 Agents · 5 Departments · 1 Mission</div>
+    <div style="font-size:14px;color:var(--dim);font-weight:500;margin-bottom:20px;line-height:1.7;">Implemented fully, this system runs your EdTech business with the operational intelligence of a 500-person company — while keeping your team focused on what only humans can do: inspire, connect, and care for students.</div>
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+      <span style="background:var(--mktg-l);border:1px solid var(--mktg-b);color:var(--mktg);font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;padding:4px 12px;border-radius:16px;">📣 10 Marketing</span>
+      <span style="background:var(--sales-l);border:1px solid var(--sales-b);color:var(--sales);font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;padding:4px 12px;border-radius:16px;">🤝 10 Sales</span>
+      <span style="background:var(--delivery-l);border:1px solid var(--delivery-b);color:var(--delivery);font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;padding:4px 12px;border-radius:16px;">🎓 10 Delivery</span>
+      <span style="background:var(--hr-l);border:1px solid var(--hr-b);color:var(--hr);font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;padding:4px 12px;border-radius:16px;">👥 10 HR</span>
+      <span style="background:var(--finance-l);border:1px solid var(--finance-b);color:var(--finance);font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;padding:4px 12px;border-radius:16px;">💰 10 Finance</span>
+    </div>
+  </div>
+</div>
+
+<div class="doc-footer">
+  AI Agent Operating System for EdTech · <span>Bharat Unnati AI Fellowship</span> · Expertpedia AI · LearnersByte<br>
+  Built with n8n · CrewAI · Claude · Groq · RazorpayAPI · WhatsApp Business API · 2026 🇮🇳
+</div>
+
+<script>
+window.addEventListener('scroll',()=>{
+  const s=window.pageYOffset,d=document.documentElement.scrollHeight-window.innerHeight;
+  document.getElementById('pb').style.width=(d>0?s/d*100:0)+'%';
+  const colors={'s-marketing':'#29B6F6','s-sales':'#FF6B6B','s-delivery':'#00C9A7','s-hr':'#9C6AFF','s-finance':'#F9A825'};
+  document.getElementById('pb').style.background='linear-gradient(90deg,#29B6F6,#FF6B6B,#00C9A7,#9C6AFF,#F9A825)';
+});
+
+const rvEls=document.querySelectorAll('.rv');
+const io=new IntersectionObserver(e=>e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('in');}),{threshold:.06,rootMargin:'0px 0px -20px 0px'});
+rvEls.forEach(el=>io.observe(el));
+
+function scrollTo(id){
+  const el=document.getElementById(id);
+  if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
+  const map={'s-marketing':'nav-marketing','s-sales':'nav-sales','s-delivery':'nav-delivery','s-hr':'nav-hr','s-finance':'nav-finance'};
+  const navId=map[id];
+  document.querySelectorAll('.dn-btn').forEach(b=>b.className='dn-btn');
+  if(navId){
+    const dept=id.replace('s-','');
+    document.getElementById(navId).classList.add('active-'+dept);
+  }
+}
+
+const sections=['s-marketing','s-sales','s-delivery','s-hr','s-finance'];
+const navMap={'s-marketing':'nav-marketing','s-sales':'nav-sales','s-delivery':'nav-delivery','s-hr':'nav-hr','s-finance':'nav-finance'};
+window.addEventListener('scroll',()=>{
+  let current='s-marketing';
+  sections.forEach(id=>{
+    const el=document.getElementById(id);
+    if(el&&el.getBoundingClientRect().top<=70)current=id;
+  });
+  document.querySelectorAll('.dn-btn').forEach(b=>b.className='dn-btn');
+  const navId=navMap[current];
+  if(navId){
+    const dept=current.replace('s-','');
+    document.getElementById(navId).classList.add('active-'+dept);
+  }
+});
+</script>
+</body>
+</html>

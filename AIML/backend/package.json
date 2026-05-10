@@ -1,0 +1,17 @@
+{
+  "name": "aiml-interview-backend",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Voice relay and backend services for AIML Interview System",
+  "scripts": {
+    "dev:voice": "node voice-relay.js",
+    "dev:openai-voice": "node openai-voice-relay.js"
+  },
+  "dependencies": {
+    "dotenv": "^17.3.1",
+    "ws": "^8.19.0",
+    "openai": "^6.22.0"
+  },
+  "devDependencies": {}
+}

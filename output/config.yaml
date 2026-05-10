@@ -1,0 +1,69 @@
+system:
+  profile: medium
+  camera_index: 0
+  frame_width: 640
+  frame_height: 480
+  display_fps: 30
+
+memory:
+  frame_pool_size: 5
+  gc_interval: 30.0
+  max_memory_mb: 512
+
+detection_intervals:
+  face_worker: 5
+  gaze_worker: 8
+  object_worker: 25
+
+face_detection:
+  confidence_threshold: 0.5
+  model_path: proctoring/detectors/res10_300x300_ssd_iter_140000.caffemodel
+  proto_path: proctoring/detectors/deploy.prototxt
+
+gaze_tracking:
+  mediapipe_confidence: 0.5
+  gaze_threshold: 0.15
+  head_pose_threshold: 30
+
+object_detection:
+  model_path: yolov8n.pt
+  target_classes: [0, 67]
+  confidence_threshold: 0.5
+
+violation_engine:
+  threshold_seconds: 3.0
+  throttle_seconds: 4.0
+  max_history_size: 30
+
+monitoring:
+  enable_stats: true
+  stats_interval: 10.0
+  log_performance: true
+
+logging:
+  level: INFO
+  log_to_file: false
+  log_file: proctoring.log
+
+database:
+  supabase_url_env: SUPABASE_URL
+  supabase_key_env: SUPABASE_SERVICE_ROLE_KEY
+  retry_attempts: 3
+  retry_delay: 1.0
+
+# Profile overrides
+profiles:
+  low:
+    detection_intervals:
+      face_worker: 10
+      gaze_worker: 15
+      object_worker: 40
+    memory:
+      frame_pool_size: 3
+  high:
+    detection_intervals:
+      face_worker: 3
+      gaze_worker: 5
+      object_worker: 15
+    memory:
+      frame_pool_size: 8
