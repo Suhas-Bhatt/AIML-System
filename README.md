@@ -111,6 +111,32 @@ Run each service in separate terminal windows:
 
 ---
 
+## 🚂 Deploying to Railway
+
+This monorepo is fully configured for [Railway](https://railway.app) deployment. Each service has its own `railway.toml` and `nixpacks.toml`.
+
+### Steps
+
+1. **Connect your GitHub repo** to Railway: go to [railway.app/new](https://railway.app/new) → *Deploy from GitHub repo* → select `Suhas-Bhatt/AIML-System`.
+
+2. **Create 3 separate Railway services** (one per service), setting the **Root Directory** for each:
+
+   | Service | Root Directory | Port |
+   |---------|---------------|------|
+   | Frontend (Next.js) | `frontend` | `$PORT` (auto) |
+   | Voice Backend (FastAPI) | `backend` | `$PORT` (auto) |
+   | Proctoring Backend (FastAPI) | `python-cheating-system` | `$PORT` (auto) |
+
+3. **Set environment variables** for each service in the Railway dashboard (see the Setup section above for the full list per service).
+
+4. **Reference service URLs** — after deploying, Railway will give each service a public URL. Copy these and set them in your frontend's env vars:
+   - `NEXT_PUBLIC_VOICE_API_URL` → Voice Backend URL
+   - `NEXT_PUBLIC_PROCTORING_WS_URL` → Proctoring Backend URL (use `wss://`)
+
+> **Note**: Railway automatically assigns `$PORT`. All services are configured to bind to this dynamic port.
+
+---
+
 ## 🧪 Testing
 
 Run frontend unit and integration tests:
