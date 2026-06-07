@@ -1,0 +1,6 @@
+# Nixpacks configuration for proctoring backend
+[phases.setup]
+nixPkgs = ["libglvnd", "glib"]
+
+[start]
+cmd = "python run.py"

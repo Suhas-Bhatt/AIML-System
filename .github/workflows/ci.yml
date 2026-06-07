@@ -1,0 +1,67 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  frontend-ci:
+    name: Frontend CI
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install Dependencies
+        run: |
+          cd frontend
+          npm ci
+
+      - name: Lint Code
+        run: |
+          cd frontend
+          npm run lint
+
+      - name: Validate Next.js Build
+        run: |
+          cd frontend
+          npm run build
+        env:
+          NEXT_TELEMETRY_DISABLED: 1
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+
+  backend-ci:
+    name: Backend CI (Voice & Proctoring)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Check Voice Backend Syntax
+        run: |
+          cd backend
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          python -m py_compile app.py
+
+      - name: Check Proctoring Backend Syntax
+        run: |
+          cd python-cheating-system
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          python -m py_compile main.py
