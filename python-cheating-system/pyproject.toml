@@ -1,0 +1,20 @@
+[project]
+name = "aural-ai-service"
+version = "1.0.0"
+description = "AI proctoring & evaluation microservice for the Aural interview platform"
+authors = [{ name = "Aural" }]
+requires-python = ">=3.11,<3.13"
+license = { text = "MIT" }
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "RUF"]
+ignore = ["E501"]
+
+[tool.pytest.ini_options]
+addopts = "-q --strict-markers"
+testpaths = ["tests"]
+asyncio_mode = "auto"

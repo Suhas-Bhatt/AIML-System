@@ -1,0 +1,6 @@
+fastapi
+uvicorn
+faster-whisper
+edge-tts
+python-multipart
+pydantic
